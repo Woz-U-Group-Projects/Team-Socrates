@@ -1,0 +1,5 @@
+logs
+tmp
+.npm
+node_modules
+.vscode
