@@ -1,0 +1,34 @@
+
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Account</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+<div class="container">
+  <form (ngSubmit)="onSubmit()">
+  <div class="row">
+    <div class="col-25">
+      <label for="lname">Area of Study</label>
+    </div>
+    <div class="col-75">
+      <input type="text" id="lname" name="lastname" placeholder="Area of Study" required [(ngModel)]="model.lastname">
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-25">
+      <label for="subject">Bio</label>
+    </div>
+    <div class="col-75">
+      <input type="text" id="subject" name="subject" placeholder="Write something.." style="height:200px" required [(ngModel)]="model.subject">
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <button type="submit">Submit</button>
+  </div>
+  </form>
+</div>
+
+</ion-content>

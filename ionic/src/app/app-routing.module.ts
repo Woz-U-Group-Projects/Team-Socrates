@@ -10,7 +10,15 @@ const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
+  },  {
+    path: 'account',
+    loadChildren: () => import('./account/account.module').then( m => m.AccountPageModule)
   },
+  {
+    path: 'accountedit',
+    loadChildren: () => import('./accountedit/accountedit.module').then( m => m.AccounteditPageModule)
+  },
+
 ];
 
 @NgModule({
