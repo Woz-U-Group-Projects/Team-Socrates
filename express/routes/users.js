@@ -4,6 +4,22 @@ const models = require ('../models');
 var authService = require('../services/auth');
 const { Op } = require("sequelize");
 
+
+router.get('/', function(req, res, next){
+  models.users.findAll({
+    attributes:
+    [
+      'uid',
+      'username'
+    ]
+  })
+  .then(users => {
+    const usersList = users.map(user => {
+      return {user_id: user.uid, username: user.username}
+    });
+    res.status(200).send(usersList);
+  })
+});
 /* New user creation */
 router.post('/', function(req, res, next) {
   models.users.findOrCreate({
