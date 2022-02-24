@@ -1,0 +1,17 @@
+<ion-content>
+  <div id="header">
+    <h1>Login</h1>
+  </div>
+
+<form id= "form" (ngSubmit)="onLogin()" ngNativeValidate>
+  <ion-item class="ion-margin-bottom">
+    <ion-input placeholder="Username" name="username" required [(ngModel)]="credentials.username"></ion-input>
+  </ion-item>
+  <ion-item class="ion-margin-bottom">
+    <ion-input type="password" placeholder="Password" name="password" required [(ngModel)]="credentials.password"></ion-input>
+  </ion-item>
+  
+   
+   <ion-button expand="block" shape="round" type="submit">Login</ion-button>
+</form>
+</ion-content>
