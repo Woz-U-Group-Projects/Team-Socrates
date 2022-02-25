@@ -1,4 +1,13 @@
-<p>
-  account-view works!
-</p>
-<ion-button (onClick)="changeView()">Edit</ion-button>
+<div class="profile">
+  <div class="username">Username: {{currentInfo.username}}</div>
+  <div class="email">Email: {{currentInfo.email}}</div>
+  <div class="firstName">First Name: {{currentInfo.firstName}}</div>
+  <div class="lastName">Last Name: {{currentInfo.lastName}}</div>
+  <div class="gender">Gender: {{userGender}}</div>
+  <div class="age">Age: {{age}}</div>
+  <div class="birthday">Birthday: {{birthday}}</div>
+  <div class="location">Location: {{currentInfo.location}}</div>
+  <div class="areaOfStudy">Area of Study: {{currentInfo.areaOfStudy}}</div>
+  <div class="bio">Bio: {{currentInfo.bio}}</div>
+  <ion-button (click)="switchView()">Edit Profile</ion-button>
+</div>

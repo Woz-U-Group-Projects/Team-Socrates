@@ -7,4 +7,5 @@ export class Account {
     gender: string;
     dateOfBirth: Date;
     location: string;
+    userId: number;
 }

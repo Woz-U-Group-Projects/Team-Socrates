@@ -4,6 +4,9 @@
     <ion-title>Account</ion-title>
   </ion-toolbar>
 </ion-header>
-
-<app-account-view *ngIf="!(editMode)"></app-account-view>
-<app-account-edit *ngIf="editMode"></app-account-edit>
+<ion-content>
+  <div class="main">
+    <app-account-view *ngIf="!(editMode) && initialized" (modeChange)="editMode=$event" [currentInfo]="userAccount"></app-account-view>
+    <app-account-edit *ngIf="editMode && initialized" (modeChange)="editMode=$event" (submit)="onSubmit($event)" [currentInfo]="userAccount"></app-account-edit>
+  </div>  
+</ion-content>

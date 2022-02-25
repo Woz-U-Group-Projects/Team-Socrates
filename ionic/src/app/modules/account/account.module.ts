@@ -10,12 +10,22 @@ import { AccountPage } from './account.page';
 import { AccountEditComponent } from './account-edit/account-edit.component';
 import { AccountViewComponent } from './account-view/account-view.component';
 
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    AccountPageRoutingModule
+    AccountPageRoutingModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonModule
   ],
   declarations: [AccountPage, AccountEditComponent, AccountViewComponent]
 })
