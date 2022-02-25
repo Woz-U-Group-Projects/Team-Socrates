@@ -1,0 +1,9 @@
+
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Account</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<app-account-view *ngIf="!(editMode)"></app-account-view>
+<app-account-edit *ngIf="editMode"></app-account-edit>

@@ -20,10 +20,16 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING,
+    firstName: {
+      type: DataTypes.STRING(50),
+      defaultValue: ""
+    },
+    lastName: {
+      type: DataTypes.STRING(50),
+      defaultValue: ""
+    },
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(254),
       unique: true,
       allowNull: false,
       validate: {
@@ -33,10 +39,28 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    areaOfStudy: DataTypes.STRING,
-    bio: DataTypes.STRING,
-    username: {
+    gender: {
+      type: DataTypes.STRING(1),
+      defaultValue: "u"
+    },
+    dateOfBirth: {
+      type: DataTypes.DATEONLY,
+      defaultValue: null
+    },
+    location: {
       type: DataTypes.STRING,
+      defaultValue: ""
+    },
+    areaOfStudy: {
+      type: DataTypes.STRING(100),
+      defaultValue: ""
+    },
+    bio: {
+      type: DataTypes.STRING(500),
+      defaultValue: ""
+    },
+    username: {
+      type: DataTypes.STRING(30),
       unique: true,
       allowNull: false,
       validate: {
@@ -49,12 +73,6 @@ module.exports = (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        len: {
-          args: [8, 30],
-          msg: "Password must be between 8 and 30 characters"
-        }
-      }
     }
   }, {
     sequelize,

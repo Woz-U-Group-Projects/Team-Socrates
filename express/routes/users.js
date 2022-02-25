@@ -15,7 +15,7 @@ router.get('/', function(req, res, next){
   })
   .then(users => {
     const usersList = users.map(user => {
-      return {user_id: user.uid, username: user.username}
+      return {userId: user.uid, username: user.username}
     });
     res.status(200).send(usersList);
   })
@@ -28,10 +28,10 @@ router.post('/', function(req, res, next) {
     },
     defaults: {
       password: req.body.password,
-      firstName: req.body.first_name,
-      lastName: req.body.last_name,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
       bio: req.body.bio,
-      areaOfStudy: req.body.area_of_study,
+      areaOfStudy: req.body.areaOfStudy,
       email: req.body.email,
       username: req.body.username
     }
@@ -102,6 +102,7 @@ router.post('/login', function(req, res, next) {
     }
   })
   .catch(err => {
+    console.log(err)
     res.status(500).send({
       message: 'Internal server error',
       error: err
@@ -130,11 +131,13 @@ router.get('/id/:id', function(req, res, next) {
         res.status(200).send({
             username: user.username,
             email: user.email,
-            first_name: user.firstName,
-            last_name: user.lastName,
+            firstName: user.firstName,
+            lastName: user.lastName,
             bio: user.bio,
-            area_of_study: user.areaOfStudy,
-            user_id: user.uid
+            areaOfStudy: user.areaOfStudy,
+            gender: user.gender,
+            dateOfBirth: user.dateOfBirth,
+            userId: user.uid
         });
       } else {
         res.status(204).send();
@@ -154,7 +157,7 @@ router.get('/profile', function(req, res, next) {
     if (decoded) {
       models.users.findOne({
         where: {
-          uid: decoded.user_id,
+          uid: decoded.userId,
           username: decoded.username
         }
       })
@@ -162,11 +165,13 @@ router.get('/profile', function(req, res, next) {
         res.status(200).send({
           username: user.username,
           email: user.email,
-          first_name: user.firstName,
-          last_name: user.lastName,
+          firstName: user.firstName,
+          lastName: user.lastName,
           bio: user.bio,
-          area_of_study: user.areaOfStudy,
-          user_id: user.uid
+          areaOfStudy: user.areaOfStudy,
+          gender: user.gender,
+          dateOfBirth: user.dateOfBirth,
+          userId: user.uid
         })
       })
       .catch( err => {
@@ -193,13 +198,15 @@ router.put('/profile', function(req, res, next) {
       models.users.update(
         {
           email: req.body.email,
-          firstName: req.body.first_name,
-          lastName: req.body.last_name,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
           bio: req.body.bio,
-          areaOfStudy: req.body.area_of_study
+          areaOfStudy: req.body.areaOfStudy,
+          gender: req.body.gender,
+          dateOfBirth: req.body.dateOfBirth
         }, 
         { where: { 
-            uid: decoded.user_id,
+            uid: decoded.userId,
             username: decoded.username
       }})
       .then(user =>{

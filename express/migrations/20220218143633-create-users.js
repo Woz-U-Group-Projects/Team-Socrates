@@ -9,24 +9,40 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       firstName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50),
+        defaultValue: ""
       },
       lastName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50),
+        defaultValue: ""
       },
       email: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(254),
         unique: true,
         allowNull: false
       },
+      gender: {
+        type: Sequelize.STRING(1),
+        defaultValue: "u"
+      },
+      dateOfBirth: {
+        type: Sequelize.DATEONLY,
+        defaultValue: null
+      },
+      location: {
+        type: Sequelize.STRING,
+        defaultValue: ""
+      },
       areaOfStudy: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100),
+        defaultValue: ""
       },
       bio: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(500),
+        defaultValue: ""
       },
       username: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(30),
         unique: true,
         allowNull: false
       },

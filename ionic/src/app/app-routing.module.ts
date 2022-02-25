@@ -14,13 +14,8 @@ const routes: Routes = [
   },
   {
     path: 'account',
-    loadChildren: () => import('./account/account.module').then( m => m.AccountPageModule)
+    loadChildren: () => import('./modules/account/account.module').then( m => m.AccountPageModule)
   },
-  {
-    path: 'accountedit',
-    loadChildren: () => import('./accountedit/accountedit.module').then( m => m.AccounteditPageModule)
-  },
-
   {
     path: 'login',
     loadChildren: () => import('./modules/login/login.module').then( m => m.LoginPageModule)
