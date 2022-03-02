@@ -27,9 +27,9 @@ router.post('/', function(req, res, next) {
       [Op.or]: [{email: req.body.email}, {username: req.body.username}]
     },
     defaults: {
-      password: req.body.password,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
+      password: authService.hashPassword(req.body.password),
+      firstName: req.body.first_name,
+      lastName: req.body.last_name,
       bio: req.body.bio,
       areaOfStudy: req.body.areaOfStudy,
       email: req.body.email,
@@ -86,8 +86,9 @@ router.post('/login', function(req, res, next) {
         message: "Username doesn't exist" 
       });
     } else {
-      // Will need password verification here later
-      if (req.body.password === user.password) {
+      // Uses bcrpyt to verify
+      let passwordMatch = authService.verifyPassword(req.body.password, user.Password);
+      if (passwordMatch) {
         let token = authService.signInUser(user); // <--- Generates token
         res.cookie('jwt', token, {httpOnly: true, sameSite: true}); // <--- Sets cookie from token to send to client. httpOnly indicates the cookie cannot be accessed via JS, but only http.
         // Will need https implementation for security
