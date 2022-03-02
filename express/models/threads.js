@@ -14,15 +14,22 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   threads.init({
-    tid: {
+    threadId: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    subject: DataTypes.STRING,
-    uid: DataTypes.INTEGER,
-    status: DataTypes.INTEGER
+    forumId: DataTypes.INTEGER,
+    subject: {
+      type: DataTypes.STRING(100),
+      defaultValue: ""
+    },
+    userId: DataTypes.INTEGER,
+    status: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
   }, {
     sequelize,
     modelName: 'threads',

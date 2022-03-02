@@ -9,13 +9,13 @@ router.get('/', function(req, res, next){
   models.users.findAll({
     attributes:
     [
-      'uid',
+      'userId',
       'username'
     ]
   })
   .then(users => {
     const usersList = users.map(user => {
-      return {userId: user.uid, username: user.username}
+      return {userId: user.userId, username: user.username}
     });
     res.status(200).send(usersList);
   })
@@ -27,13 +27,9 @@ router.post('/', function(req, res, next) {
       [Op.or]: [{email: req.body.email}, {username: req.body.username}]
     },
     defaults: {
-      password: authService.hashPassword(req.body.password),
-      firstName: req.body.first_name,
-      lastName: req.body.last_name,
-      bio: req.body.bio,
-      areaOfStudy: req.body.areaOfStudy,
+      username: req.body.username,
       email: req.body.email,
-      username: req.body.username
+      password: authService.hashPassword(req.body.password)
     }
   })
   .then(([user, created]) =>{
@@ -87,7 +83,7 @@ router.post('/login', function(req, res, next) {
       });
     } else {
       // Uses bcrpyt to verify
-      let passwordMatch = authService.verifyPassword(req.body.password, user.Password);
+      let passwordMatch = authService.verifyPassword(req.body.password, user.password);
       if (passwordMatch) {
         let token = authService.signInUser(user); // <--- Generates token
         res.cookie('jwt', token, {httpOnly: true, sameSite: true}); // <--- Sets cookie from token to send to client. httpOnly indicates the cookie cannot be accessed via JS, but only http.
@@ -115,30 +111,38 @@ router.post('/login', function(req, res, next) {
 router.get('/id/:id', function(req, res, next) {
   models.users.findOne({
     where: {
-      uid: req.params.id
+      userId: req.params.id
     },
     attributes: [
       'username',
       'firstName',
       'lastName',
+      'gender',
+      'dateOfBirth',
+      'city',
+      'region',
+      'country',
       'bio',
       'areaOfStudy',
-      'uid',
-      'email'
+      'userId',
+      'email',
     ]
     })
     .then( user => {
       if (user) {
         res.status(200).send({
-            username: user.username,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            bio: user.bio,
-            areaOfStudy: user.areaOfStudy,
-            // gender: user.gender,
-            // dateOfBirth: user.dateOfBirth,
-            userId: user.uid
+          userId: user.userId,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          gender: user.gender,
+          dateOfBirth: user.dateOfBirth,
+          city: user.city,
+          region: user.region,
+          country: user.country,
+          bio: user.bio,
+          areaOfStudy: user.areaOfStudy,
         });
       } else {
         res.status(204).send();
@@ -158,21 +162,24 @@ router.get('/profile', function(req, res, next) {
     if (decoded) {
       models.users.findOne({
         where: {
-          uid: decoded.userId,
-          username: decoded.username
+          userId: decoded.userId,
+          username: decoded.username,
         }
       })
       .then(user => {
         res.status(200).send({
+          userId: user.userId,
           username: user.username,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
-          bio: user.bio,
-          areaOfStudy: user.areaOfStudy,
           gender: user.gender,
           dateOfBirth: user.dateOfBirth,
-          userId: user.uid
+          city: user.city,
+          region: user.region,
+          country: user.country,
+          bio: user.bio,
+          areaOfStudy: user.areaOfStudy,
         })
       })
       .catch( err => {
@@ -201,13 +208,16 @@ router.put('/profile', function(req, res, next) {
           email: req.body.email,
           firstName: req.body.firstName,
           lastName: req.body.lastName,
+          gender: req.body.gender,
+          dateOfBirth: req.body.dateOfBirth,
+          city: req.body.city,
+          region: req.body.region,
+          country: req.body.country,
           bio: req.body.bio,
           areaOfStudy: req.body.areaOfStudy,
-          gender: req.body.gender,
-          dateOfBirth: req.body.dateOfBirth
         }, 
         { where: { 
-            uid: decoded.userId,
+            userId: decoded.userId,
             username: decoded.username
       }})
       .then(user =>{

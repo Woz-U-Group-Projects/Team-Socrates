@@ -28,9 +28,17 @@
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
   <mat-form-field>
-    <mat-label>City, State</mat-label>
-    <input matInput name="location" [(ngModel)]="currentInfo.location">
+    <mat-label>City</mat-label>
+    <input matInput name="city" [(ngModel)]="currentInfo.city">
   </mat-form-field>
+  <mat-form-field>
+    <mat-label>State or Region</mat-label>
+    <input matInput name="region" [(ngModel)]="currentInfo.region">
+  </mat-form-field> <mat-form-field>
+    <mat-label>Country</mat-label>
+    <input matInput name="country" [(ngModel)]="currentInfo.country">
+  </mat-form-field>
+
 
   <mat-form-field>
     <mat-label>Area of Study</mat-label>

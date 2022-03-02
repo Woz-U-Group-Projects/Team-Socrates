@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   users.init({
-    uid: {
+    userId: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
@@ -22,11 +22,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     firstName: {
       type: DataTypes.STRING(50),
-      defaultValue: ""
+      defaultValue: "",
     },
     lastName: {
       type: DataTypes.STRING(50),
-      defaultValue: ""
+      defaultValue: "",
     },
     email: {
       type: DataTypes.STRING(254),
@@ -35,29 +35,37 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         isEmail: {
           args: true,
-          msg: "Invalid email format"
+          msg: "Invalid email format",
         }
       }
     },
     gender: {
       type: DataTypes.STRING(1),
-      defaultValue: "u"
+      defaultValue: "u",
     },
     dateOfBirth: {
       type: DataTypes.DATEONLY,
-      defaultValue: null
+      defaultValue: null,
     },
-    location: {
-      type: DataTypes.STRING,
+    city: {
+      type: DataTypes.STRING(40),
       defaultValue: ""
+    },
+    region: {
+      type: DataTypes.STRING(50),
+      defaultValue: "",
+    },
+    country: {
+      type: DataTypes.STRING(56),
+      defaultValue: "",
     },
     areaOfStudy: {
       type: DataTypes.STRING(100),
-      defaultValue: ""
+      defaultValue: "",
     },
     bio: {
       type: DataTypes.STRING(500),
-      defaultValue: ""
+      defaultValue: "",
     },
     username: {
       type: DataTypes.STRING(30),

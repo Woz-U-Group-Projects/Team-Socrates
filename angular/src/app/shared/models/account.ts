@@ -1,12 +1,14 @@
 export class Account {
-    username!: string;
-    firstName!: string;
-    lastName!: string;
-    email!: string;
-    areaOfStudy!: string;
-    bio!: string;
-    gender!: string;
-    dateOfBirth?: Date;
-    location!: string;
     userId!: number;
+    username!: string;
+    email!: string;
+    firstName?: string;
+    lastName?: string;
+    gender?: string;
+    dateOfBirth?: Date;
+    city?: string;
+    region?: string;
+    country?: string;
+    bio?: string;
+    areaOfStudy?: string;
 }
