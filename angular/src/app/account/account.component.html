@@ -1,0 +1,5 @@
+<div>
+  <h1>Account</h1>
+  <app-account-view *ngIf="!(editMode) && initialized" (modeChange)="editMode=$event" [currentInfo]="userAccount"></app-account-view>
+  <app-account-edit *ngIf="editMode && initialized" (modeChange)="editMode=$event" (submit)="onSubmit($event)" [currentInfo]="userAccount"></app-account-edit>
+</div>

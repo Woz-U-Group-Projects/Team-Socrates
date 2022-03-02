@@ -1,0 +1,18 @@
+<div>
+<h1>Signup</h1>
+<form id= "form" (ngSubmit)="userSubmit()" ngNativeValidate>
+  <mat-form-field>
+    <mat-label>Username</mat-label>
+    <input matInput placeholder="Username" name="username" required [(ngModel)]="newUser.username">
+  </mat-form-field>  
+  <mat-form-field>
+    <mat-label>Password</mat-label>
+    <input matInput type="password" placeholder="Password" name="password" required [(ngModel)]="newUser.password">
+  </mat-form-field>  
+  <mat-form-field>
+    <mat-label>Email</mat-label>
+    <input matInput type="email" placeholder="Email" name="email" required [(ngModel)]="newUser.email">
+  </mat-form-field>
+   <button mat-button type="submit">Sign Up</button>
+</form>
+</div>

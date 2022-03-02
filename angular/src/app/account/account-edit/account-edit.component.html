@@ -1,0 +1,45 @@
+<form (ngSubmit)="update()">
+  <mat-form-field>
+    <mat-label>Email</mat-label>
+    <input matInput name="email" [(ngModel)]="currentInfo.email">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>First Name</mat-label>
+    <input matInput name="firstName" [(ngModel)]="currentInfo.firstName">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Last Name</mat-label>
+    <input matInput name="lastName" [(ngModel)]="currentInfo.lastName">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Gender</mat-label>
+    <mat-select name="gender" [(ngModel)]="currentInfo.gender">
+      <mat-option value="m">Male</mat-option>
+      <mat-option value="f">Female</mat-option>
+      <mat-option value="o">Other</mat-option>
+      <mat-option value="u">Prefer Not to Say</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Enter Date of Birth</mat-label>
+    <input matInput [matDatepicker]="picker" name="dateOfBirth" [(ngModel)]="currentInfo.dateOfBirth">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>City, State</mat-label>
+    <input matInput name="location" [(ngModel)]="currentInfo.location">
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Area of Study</mat-label>
+    <input matInput name="areaOfStudy" [(ngModel)]="currentInfo.areaOfStudy">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Bio</mat-label>
+    <textarea matInput name="bio" [(ngModel)]="currentInfo.bio"></textarea>
+  </mat-form-field>
+  <button (click)="switchView()" mat-button>Go back</button>
+  <button type="submit" mat-button>Update Profile</button>
+</form>

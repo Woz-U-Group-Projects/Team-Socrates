@@ -1,0 +1,14 @@
+<div>
+  <h1>Login</h1>
+  <form id= "form" (ngSubmit)="onLogin()" ngNativeValidate>
+    <mat-form-field>
+      <mat-label>Username</mat-label>
+      <input matInput placeholder="Username" name="username" required [(ngModel)]="credentials.username">
+    </mat-form-field>  
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput type="password" placeholder="Password" name="password" required [(ngModel)]="credentials.password">
+    </mat-form-field>  
+     <button mat-button type="submit">Login</button>
+  </form>
+</div>

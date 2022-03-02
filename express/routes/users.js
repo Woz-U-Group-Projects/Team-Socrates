@@ -135,8 +135,8 @@ router.get('/id/:id', function(req, res, next) {
             lastName: user.lastName,
             bio: user.bio,
             areaOfStudy: user.areaOfStudy,
-            gender: user.gender,
-            dateOfBirth: user.dateOfBirth,
+            // gender: user.gender,
+            // dateOfBirth: user.dateOfBirth,
             userId: user.uid
         });
       } else {
