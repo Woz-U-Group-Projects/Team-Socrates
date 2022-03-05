@@ -18,18 +18,31 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
     },
-    forumId: DataTypes.INTEGER,
+    forumId: {
+      type: DataTypes.INTEGER,
+      references: {model: 'forums', key: 'forumId'},
+      allowNull: false,
+    },
     subject: {
-      type: DataTypes.STRING(100),
-      defaultValue: ""
+      type: DataTypes.STRING(50),
+      defaultValue: "",
     },
-    userId: DataTypes.INTEGER,
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {model: 'users', key: 'userId'},
+      allowNull: false,
+    },
     status: {
       type: DataTypes.INTEGER,
-      defaultValue: 0
+      defaultValue: 0,
     },
+    edited: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    
   }, {
     sequelize,
     modelName: 'threads',

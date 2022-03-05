@@ -18,7 +18,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+    },
+    screenName: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
     },
     firstName: {
       type: DataTypes.STRING(50),
@@ -37,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
           args: true,
           msg: "Invalid email format",
         }
-      }
+      },
     },
     gender: {
       type: DataTypes.STRING(1),
@@ -49,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     city: {
       type: DataTypes.STRING(40),
-      defaultValue: ""
+      defaultValue: "",
     },
     region: {
       type: DataTypes.STRING(50),
@@ -76,12 +80,16 @@ module.exports = (sequelize, DataTypes) => {
           args: [6, 30],
           msg: "Username must be between 6 and 30 characters"
         }
-      }
+      },
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-    }
+    },
+    admin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   }, {
     sequelize,
     modelName: 'users',

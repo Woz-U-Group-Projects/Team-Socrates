@@ -7,7 +7,7 @@ import { ApiService } from '../core/services/api.service';
   styleUrls: ['./signup.component.scss']
 })
 export class SignupComponent implements OnInit {
-  newUser: any = {username: '', password: '', email: ''};
+  newUser: any = {username: '', password: '', email: '', screenName: ''};
   private apiRoute = 'users';
   userSubmit() {
     this._ApiService.post(this.apiRoute, this.newUser).subscribe(

@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const models = require ('../models');
-var authService = require('../services/auth');
+const authService = require('../services/auth');
 const { Op } = require("sequelize");
 
 
@@ -29,7 +29,8 @@ router.post('/', function(req, res, next) {
     defaults: {
       username: req.body.username,
       email: req.body.email,
-      password: authService.hashPassword(req.body.password)
+      password: authService.hashPassword(req.body.password),
+      screenName: req.body.screenName,
     }
   })
   .then(([user, created]) =>{
@@ -54,17 +55,17 @@ router.post('/', function(req, res, next) {
     if (err.name === "SequelizeValidationError") {
       res.status(400).send({
         message: 'Bad request',
-        error: err
+        errors: err.errors
       })
     } if (!req.body.username || !req.body.password || !req.body.email) {
       res.status(400).send({
         message: 'Bad request',
-        error: 'Missing field'
+        error: 'Missing field(s)'
       })
     } else {
+      console.error(err);
       res.status(500).send({
-        message: 'Internal server error',
-        error: err
+        message: err.message
       })
     }
   })
@@ -85,9 +86,9 @@ router.post('/login', function(req, res, next) {
       // Uses bcrpyt to verify
       let passwordMatch = authService.verifyPassword(req.body.password, user.password);
       if (passwordMatch) {
-        let token = authService.signInUser(user); // <--- Generates token
-        res.cookie('jwt', token, {httpOnly: true, sameSite: true}); // <--- Sets cookie from token to send to client. httpOnly indicates the cookie cannot be accessed via JS, but only http.
-        // Will need https implementation for security
+        let SignIn = authService.signInUser(user); // <--- Generates token & public cookie uuid
+        res.cookie('jwt', SignIn.token, {httpOnly: true, sameSite: true, secure: process.env.NODE_ENV === 'production'? true: false}); // <--- Sets cookie from token to send to client. httpOnly indicates the cookie cannot be accessed via JS, but only http. It is set up to require https in a theoretical production environment.
+        res.cookie('public-session', SignIn.uuid, {expire: 3600000, sameSite: true, secure: process.env.NODE_ENV === 'production'? true: false});
         res.status(200).send({
           message: "Login successful"
         })
@@ -99,10 +100,9 @@ router.post('/login', function(req, res, next) {
     }
   })
   .catch(err => {
-    console.log(err)
+    console.error(err);
     res.status(500).send({
-      message: 'Internal server error',
-      error: err
+      message: err.message
     })
   })
 });
@@ -145,12 +145,13 @@ router.get('/id/:id', function(req, res, next) {
           areaOfStudy: user.areaOfStudy,
         });
       } else {
-        res.status(204).send();
+        res.status(404).send();
       }
     })
     .catch( err => {
+      console.error(err);
       res.status(500).send({
-        error: err
+        message: err.message
       })
     })
   });
@@ -171,6 +172,7 @@ router.get('/profile', function(req, res, next) {
           userId: user.userId,
           username: user.username,
           email: user.email,
+          screenName: user.screenName,
           firstName: user.firstName,
           lastName: user.lastName,
           gender: user.gender,
@@ -183,8 +185,9 @@ router.get('/profile', function(req, res, next) {
         })
       })
       .catch( err => {
+        console.error(err);
         res.status(500).send({
-          error: err
+          message: err.message
         })
       });
     } else {
@@ -206,6 +209,7 @@ router.put('/profile', function(req, res, next) {
       models.users.update(
         {
           email: req.body.email,
+          screenName: req.body.screenName,
           firstName: req.body.firstName,
           lastName: req.body.lastName,
           gender: req.body.gender,
@@ -221,14 +225,12 @@ router.put('/profile', function(req, res, next) {
             username: decoded.username
       }})
       .then(user =>{
-        res.status(200).send({
-          message: "Profile info updated"
-        })
+        res.status(204).send();
       })
       .catch(err => {
+        console.error(err);
         res.status(500).send({
-          message: "Internal server error",
-          error: err
+          message: err.message
         })
       })
     } else {

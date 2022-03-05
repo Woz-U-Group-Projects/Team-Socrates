@@ -1,19 +1,22 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const uuid = require('uuid');
 
 var authService = {
   signInUser: function(user) {
+    const newUuid = uuid.v1();
     const token = jwt.sign(
       {
         username: user.username,
         userId: user.userId,
+        uuid: newUuid,
       },
-      'secretkey', // Will need to make more secure later!
+      'secretkey', // Will need to make secret key process secure later!
       {
         expiresIn: '1h'
-      }
+      },
     );
-    return token;
+    return {token: token, uuid: newUuid};
   },
   decodeToken: function(token) {
     try 

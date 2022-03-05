@@ -1,8 +1,9 @@
-var express = require('express');
-const { sequelize } = require('../models');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const models = require ('../models');
-var authService = require('../services/auth');
+const authService = require('../services/auth');
+const { Op } = require("sequelize");
+
 
 router.get('/', function(req, res, next) {
   res.send("Responding with a resource.")

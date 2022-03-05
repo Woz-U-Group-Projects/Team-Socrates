@@ -1,5 +1,9 @@
 <form (ngSubmit)="update()">
   <mat-form-field>
+    <mat-label>Screen Name</mat-label>
+    <input matInput name="screenName" [(ngModel)]="currentInfo.screenName">
+  </mat-form-field>
+  <mat-form-field>
     <mat-label>Email</mat-label>
     <input matInput name="email" [(ngModel)]="currentInfo.email">
   </mat-form-field>
