@@ -24,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(30),
       allowNull: false,
     },
+    profilePic: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      defaultValue: null,
+    },
     firstName: {
       type: DataTypes.STRING(50),
       defaultValue: "",
@@ -93,6 +98,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'users',
+    paranoid: true,
   });
   return users;
 };

@@ -1,7 +1,7 @@
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from './services/api.service';
-
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [],
@@ -9,8 +9,9 @@ import { ApiService } from './services/api.service';
     CommonModule
   ],
   providers: [
-    ApiService
-  ]
+    ApiService,
+    CookieService,
+  ],
 })
 export class CoreModule { 
 

@@ -4,19 +4,19 @@ INSERT INTO users (username, password, email, screenName, createdAt, updatedAt)
 VALUES ("BilboBaggins", "Password1", "hobbiton@theshire.org", "B.Baggins", CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 INSERT INTO users (username, password, email, screenName, createdAt, updatedAt)
 VALUES ("JohnDoe", "genericPassword!", "anotheremail@blahblah.net", "Enigma1", CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
-INSERT INTO forums (name, createdAt, updatedAt)
+INSERT INTO categories (name, createdAt, updatedAt)
 VALUES ("Test Forum", current_timestamp(), current_timestamp());
-INSERT INTO forums (name, createdAt, updatedAt)
+INSERT INTO categories (name, createdAt, updatedAt)
 VALUES ("Introductions", current_timestamp(), current_timestamp());
-INSERT INTO forums (name, createdAt, updatedAt)
+INSERT INTO categories (name, createdAt, updatedAt)
 VALUES ("Technology", current_timestamp(), current_timestamp());
-INSERT INTO threads (forumId, userId, subject, createdAt, updatedAt)
+INSERT INTO threads (categoryId, authorId, subject, createdAt, updatedAt)
 VALUES (1, 1, "Test", current_timestamp(), current_timestamp());
-INSERT INTO threads (forumId, userId, subject, createdAt, updatedAt)
+INSERT INTO threads (categoryId, authorId, subject, createdAt, updatedAt)
 VALUES (1, 1, "TestTest", current_timestamp(), current_timestamp());
-INSERT INTO threads (forumId, userId, subject, createdAt, updatedAt)
+INSERT INTO threads (categoryId, authorId, subject, createdAt, updatedAt)
 VALUES (2, 2, "Hello All", current_timestamp(), current_timestamp());
-INSERT INTO threads (forumId, userId, subject, createdAt, updatedAt)
+INSERT INTO threads (categoryId, authorId, subject, createdAt, updatedAt)
 VALUES (3, 3, "Lorem Ipsum", current_timestamp(), current_timestamp());
 INSERT INTO posts (threadId, userId, threadStarter, body, createdAt, updatedAt)
 VALUES (1, 1, true, "This is a Test thread, please ignore", current_timestamp(), current_timestamp());

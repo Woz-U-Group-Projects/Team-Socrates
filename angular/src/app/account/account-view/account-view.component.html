@@ -4,9 +4,9 @@
   <div class="screenName">Screen Name: {{currentInfo.screenName}}</div>
   <div class="firstName">First Name: {{currentInfo.firstName}}</div>
   <div class="lastName">Last Name: {{currentInfo.lastName}}</div>
-  <div class="gender">Gender: {{userGender}}</div>
-  <div class="age">Age: {{age}}</div>
-  <div class="birthday">Birthday: {{birthday}}</div>
+  <div class="gender">Gender: {{currentInfo.gender | gender}}</div>
+  <div class="age">Age: {{currentInfo.dateOfBirth | age}}</div>
+  <div class="birthday">Birthday: {{currentInfo.dateOfBirth | date: 'MMMM d'}}</div>
   <div class="location">Location: {{currentInfo.city + ' ' + currentInfo.region + ' ' + currentInfo.country}}</div>
   <div class="areaOfStudy">Area of Study: {{currentInfo.areaOfStudy}}</div>
   <div class="bio">Bio: {{currentInfo.bio}}</div>

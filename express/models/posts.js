@@ -42,13 +42,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    edited: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
   }, {
     sequelize,
     modelName: 'posts',
+    paranoid: true,
   });
   return posts;
 };

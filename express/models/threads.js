@@ -20,16 +20,16 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER,
     },
-    forumId: {
+    categoryId: {
       type: DataTypes.INTEGER,
-      references: {model: 'forums', key: 'forumId'},
+      references: {model: 'categories', key: 'categoryId'},
       allowNull: false,
     },
     subject: {
       type: DataTypes.STRING(50),
-      defaultValue: "",
+      defaultValue: "New Thread",
     },
-    userId: {
+    authorId: {
       type: DataTypes.INTEGER,
       references: {model: 'users', key: 'userId'},
       allowNull: false,
@@ -38,14 +38,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    edited: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    
+    lastBumped: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+    }
   }, {
     sequelize,
     modelName: 'threads',
+    paranoid: true,
   });
   return threads;
 };

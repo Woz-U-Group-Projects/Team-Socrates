@@ -10,7 +10,7 @@ router.get('/', function(req, res, next){
     attributes:
     [
       'userId',
-      'username'
+      'screenName',
     ]
   })
   .then(users => {
@@ -24,7 +24,7 @@ router.get('/', function(req, res, next){
 router.post('/', function(req, res, next) {
   models.users.findOrCreate({
     where: { 
-      [Op.or]: [{email: req.body.email}, {username: req.body.username}]
+      [Op.or]: [{email: {[Op.like]: req.body.email}}, {username: {[Op.like]: req.body.username}}]
     },
     defaults: {
       username: req.body.username,
@@ -39,11 +39,11 @@ router.post('/', function(req, res, next) {
         message: 'User successfully created.'
       });
     } else {
-      if (user.username === req.body.username){
+      if (user.username.toLowerCase() === req.body.username.toLowerCase()){
         res.status(409).send({
           message: 'Username already exists.'
         })
-      } else if (user.email === req.body.email) {
+      } else if (user.email.toLowerCase() === req.body.email.toLowerCase()) {
       res.status(409).send({
         message: 'Email is taken.'
       })
@@ -75,7 +75,7 @@ router.post('/', function(req, res, next) {
 router.post('/login', function(req, res, next) {
   models.users.findOne({
     where: {
-      username: req.body.username
+      username: {[Op.like]: req.body.username}
     }
   }).then(user => {
     if (!user) {
@@ -84,17 +84,23 @@ router.post('/login', function(req, res, next) {
       });
     } else {
       // Uses bcrpyt to verify
-      let passwordMatch = authService.verifyPassword(req.body.password, user.password);
-      if (passwordMatch) {
-        let SignIn = authService.signInUser(user); // <--- Generates token & public cookie uuid
-        res.cookie('jwt', SignIn.token, {httpOnly: true, sameSite: true, secure: process.env.NODE_ENV === 'production'? true: false}); // <--- Sets cookie from token to send to client. httpOnly indicates the cookie cannot be accessed via JS, but only http. It is set up to require https in a theoretical production environment.
-        res.cookie('public-session', SignIn.uuid, {expire: 3600000, sameSite: true, secure: process.env.NODE_ENV === 'production'? true: false});
-        res.status(200).send({
-          message: "Login successful"
-        })
-      } else {
+      const passwordMatch = authService.verifyPassword(req.body.password, user.password);
+      if (!passwordMatch) {
         res.status(401).send({
           message: "Invalid password"
+        })
+      } else {
+        const SignIn = authService.signInUser(user); // <--- Generates token & public cookie uuid
+        const expiry = new Date(Date.now() + 3600000);
+        // Fresh baked cookies
+        // Sets PRIVATE_ID cookie from token to send to client. httpOnly indicates the cookie cannot be accessed via JS, but only http. It is set up to require https in a theoretical production environment.
+        // PUBLIC_ID uuid associated with PRIVATE_ID.
+        // SESSION_EXPIRATION tells client when the cookies will expire.
+        res.cookie('PRIVATE_ID', SignIn.token, {expires: expiry, httpOnly: true, sameSite: true, secure: process.env.NODE_ENV === 'production'? true: false}); 
+        res.cookie('PUBLIC_ID', SignIn.uuid, {expires: expiry, sameSite: true, secure: process.env.NODE_ENV === 'production'? true: false});
+        res.cookie('SESSION_EXPIRATION', expiry.toTimeString(), {expires: expiry});
+        res.status(200).send({
+          message: "Login successful"
         })
       }
     }
@@ -106,6 +112,8 @@ router.post('/login', function(req, res, next) {
     })
   })
 });
+
+
 
 /* GET users listing. */
 router.get('/id/:id', function(req, res, next) {
@@ -129,11 +137,13 @@ router.get('/id/:id', function(req, res, next) {
     ]
     })
     .then( user => {
-      if (user) {
+      if (!user) {
+        res.status(404).send();
+      }
         res.status(200).send({
           userId: user.userId,
-          username: user.username,
-          email: user.email,
+          screenName: user.screenName,
+          profilePic: user.profilePic,
           firstName: user.firstName,
           lastName: user.lastName,
           gender: user.gender,
@@ -143,10 +153,8 @@ router.get('/id/:id', function(req, res, next) {
           country: user.country,
           bio: user.bio,
           areaOfStudy: user.areaOfStudy,
+          admin: user.admin,
         });
-      } else {
-        res.status(404).send();
-      }
     })
     .catch( err => {
       console.error(err);
@@ -158,10 +166,19 @@ router.get('/id/:id', function(req, res, next) {
 
 /* Account View */
 router.get('/profile', function(req, res, next) {
-  if (req.cookies.jwt) {
-    let decoded = authService.decodeToken(req.cookies.jwt);
-    if (decoded) {
-      models.users.findOne({
+  if (!(req.cookies.PRIVATE_ID && req.cookies.PUBLIC_ID)) {
+    res.status(401).send({
+      message: "Login tokens not found"
+    })
+  } 
+  const decoded = authService.decodeToken(req.cookies.PRIVATE_ID);
+  if (!(authService.crossReference(decoded, req.cookies.PUBLIC_ID))) {
+    res.status(401).send({
+      message: "Invalid or expired token"
+    })
+  } else {
+    
+    models.users.findOne({
         where: {
           userId: decoded.userId,
           username: decoded.username,
@@ -173,6 +190,7 @@ router.get('/profile', function(req, res, next) {
           username: user.username,
           email: user.email,
           screenName: user.screenName,
+          profilePic: user.profilePic,
           firstName: user.firstName,
           lastName: user.lastName,
           gender: user.gender,
@@ -190,26 +208,26 @@ router.get('/profile', function(req, res, next) {
           message: err.message
         })
       });
-    } else {
-      res.status(401).send({
-        message: "Invalid or expired token"
-      })
-    }
-  } else {
-    res.status(401).send({
-      message: "No token found"
-    })
   }
 });
 
 router.put('/profile', function(req, res, next) {
-  if (req.cookies.jwt) {
-    let decoded = authService.decodeToken(req.cookies.jwt);
-    if (decoded) {
+  if (!(req.cookies.PRIVATE_ID && req.cookies.PUBLIC_ID)) {
+    res.status(401).send({
+      message: "Login tokens not found"
+    }) 
+  } 
+    const decoded = authService.decodeToken(req.cookies.PRIVATE_ID);
+    if (!(authService.crossReference(decoded, req.cookies.PUBLIC_ID))) {
+      res.status(401).send({
+        message: "Invalid or expired token"
+      })
+    }  else {
       models.users.update(
         {
           email: req.body.email,
           screenName: req.body.screenName,
+          profilePic: req.body.profilePic,
           firstName: req.body.firstName,
           lastName: req.body.lastName,
           gender: req.body.gender,
@@ -233,15 +251,6 @@ router.put('/profile', function(req, res, next) {
           message: err.message
         })
       })
-    } else {
-      res.status(401).send({
-        message: "Invalid or expired token"
-      })
     }
-  } else {
-    res.status(401).send({
-      message: "No token found"
-    })
-  }
 });
 module.exports = router;

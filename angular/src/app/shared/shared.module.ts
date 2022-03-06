@@ -7,9 +7,10 @@ import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { MatCommonModule } from '@angular/material/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
+import { AgePipe } from './pipes/age.pipe';
+import { GenderPipe } from './pipes/gender.pipe';
 @NgModule({
-  declarations: [ NavbarComponent],
+  declarations: [ NavbarComponent, AgePipe, GenderPipe,],
   imports: [
     CommonModule,
     FormsModule,
@@ -17,7 +18,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     ReactiveFormsModule,
     RouterModule,
     MatCommonModule,
-    MatToolbarModule
+    MatToolbarModule,
   ],
   exports: [
     NavbarComponent,
@@ -27,7 +28,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     HttpClientModule,
     RouterModule,
     MatCommonModule,
-    MatToolbarModule
+    MatToolbarModule,
+    AgePipe,
+    GenderPipe
   ]
 
 })

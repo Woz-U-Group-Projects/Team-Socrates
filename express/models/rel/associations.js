@@ -16,13 +16,14 @@ module.exports = (models) => {
   
   models.users.hasMany(models.threads, {
     foreignKey: {
-      name: 'userId',
+      name: 'authorId',
       allowNull: false,
   }
 });
   models.threads.belongsTo(models.users, {
+    as: 'author',
     foreignKey: {
-      name: 'userId',
+      name: 'authorId',
       allowNull: false,
   }
 });
@@ -39,15 +40,15 @@ module.exports = (models) => {
       allowNull: false,
   }
 });
-  models.forums.hasMany(models.threads, {
+  models.categories.hasMany(models.threads, {
     foreignKey: {
-      name: 'forumId',
+      name: 'categoryId',
       allowNull: false,
   }
 });
-  models.threads.belongsTo(models.forums, {
+  models.threads.belongsTo(models.categories, {
     foreignKey: {
-      name: 'forumId',
+      name: 'categoryId',
       allowNull: false,
   }
 });
