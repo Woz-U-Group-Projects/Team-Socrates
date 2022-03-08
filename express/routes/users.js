@@ -20,6 +20,62 @@ router.get('/', function(req, res, next){
     res.status(200).send(usersList);
   })
 });
+
+// GET users friend list
+router.get('/id/:id/friends', async function(req, res, next){
+
+});
+
+/* GET user profile. */
+router.get('/id/:id', function(req, res, next) {
+  models.users.findOne({
+    where: {
+      userId: req.params.id
+    },
+    attributes: [
+      'screenName',
+      'profilePic',
+      'firstName',
+      'lastName',
+      'gender',
+      'dateOfBirth',
+      'city',
+      'region',
+      'country',
+      'bio',
+      'areaOfStudy',
+      'userId',
+      'admin',
+    ]
+    })
+    .then( user => {
+      if (!user) {
+        res.status(404).send();
+      }
+        res.status(200).send({
+          userId: user.userId,
+          screenName: user.screenName,
+          profilePic: user.profilePic,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          gender: user.gender,
+          dateOfBirth: user.dateOfBirth,
+          city: user.city,
+          region: user.region,
+          country: user.country,
+          bio: user.bio,
+          areaOfStudy: user.areaOfStudy,
+          admin: user.admin,
+        });
+    })
+    .catch( err => {
+      console.error(err);
+      res.status(500).send({
+        message: err.message
+      })
+    })
+  });
+
 /* New user creation */
 router.post('/', function(req, res, next) {
   models.users.findOrCreate({
@@ -57,7 +113,7 @@ router.post('/', function(req, res, next) {
         message: 'Bad request',
         errors: err.errors
       })
-    } if (!req.body.username || !req.body.password || !req.body.email) {
+    } if (!req.body.username || !req.body.password || !req.body.email || !req.body.screenName) {
       res.status(400).send({
         message: 'Bad request',
         error: 'Missing field(s)'
@@ -115,73 +171,17 @@ router.post('/login', function(req, res, next) {
 
 
 
-/* GET users listing. */
-router.get('/id/:id', function(req, res, next) {
-  models.users.findOne({
-    where: {
-      userId: req.params.id
-    },
-    attributes: [
-      'username',
-      'firstName',
-      'lastName',
-      'gender',
-      'dateOfBirth',
-      'city',
-      'region',
-      'country',
-      'bio',
-      'areaOfStudy',
-      'userId',
-      'email',
-    ]
-    })
-    .then( user => {
-      if (!user) {
-        res.status(404).send();
-      }
-        res.status(200).send({
-          userId: user.userId,
-          screenName: user.screenName,
-          profilePic: user.profilePic,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          gender: user.gender,
-          dateOfBirth: user.dateOfBirth,
-          city: user.city,
-          region: user.region,
-          country: user.country,
-          bio: user.bio,
-          areaOfStudy: user.areaOfStudy,
-          admin: user.admin,
-        });
-    })
-    .catch( err => {
-      console.error(err);
-      res.status(500).send({
-        message: err.message
-      })
-    })
-  });
 
 /* Account View */
 router.get('/profile', function(req, res, next) {
-  if (!(req.cookies.PRIVATE_ID && req.cookies.PUBLIC_ID)) {
-    res.status(401).send({
-      message: "Login tokens not found"
-    })
-  } 
-  const decoded = authService.decodeToken(req.cookies.PRIVATE_ID);
-  if (!(authService.crossReference(decoded, req.cookies.PUBLIC_ID))) {
-    res.status(401).send({
-      message: "Invalid or expired token"
-    })
+  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
+  if (auth.ok === false) {
+    res.status(auth.status).send(auth.message);
   } else {
-    
     models.users.findOne({
         where: {
-          userId: decoded.userId,
-          username: decoded.username,
+          userId: auth.decoded.userId,
+          username: auth.decoded.username,
         }
       })
       .then(user => {
@@ -212,18 +212,11 @@ router.get('/profile', function(req, res, next) {
 });
 
 router.put('/profile', function(req, res, next) {
-  if (!(req.cookies.PRIVATE_ID && req.cookies.PUBLIC_ID)) {
-    res.status(401).send({
-      message: "Login tokens not found"
-    }) 
-  } 
-    const decoded = authService.decodeToken(req.cookies.PRIVATE_ID);
-    if (!(authService.crossReference(decoded, req.cookies.PUBLIC_ID))) {
-      res.status(401).send({
-        message: "Invalid or expired token"
-      })
-    }  else {
-      models.users.update(
+  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
+  if (auth.ok === false) {
+    res.status(auth.status).send(auth.message);
+  }  else {
+    models.users.update(
         {
           email: req.body.email,
           screenName: req.body.screenName,
@@ -239,8 +232,8 @@ router.put('/profile', function(req, res, next) {
           areaOfStudy: req.body.areaOfStudy,
         }, 
         { where: { 
-            userId: decoded.userId,
-            username: decoded.username
+            userId: auth.decoded.userId,
+            username: auth.decoded.username
       }})
       .then(user =>{
         res.status(204).send();

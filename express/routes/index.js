@@ -6,15 +6,19 @@ const { Op } = require("sequelize");
 
 
 router.get('/', function(req, res, next) {
-  res.send("Responding with a resource.")
-})
-module.exports = router;
-
-
-/* Test Route for authentication user cookies */
-router.get('/auth', function(req, res, next) {
-  if (req.cookies.PUBLIC_ID && req.cookies.PRIVATE_ID){
-  } else {
-    res.status(401).send({message: "Missing token"})
-  }
+  res.send({routes: {
+    signup: "POST /users",
+    login: "POST /users/login",
+    findAllUsers: "GET /users",
+    findUserInfo: "GET /users/id/:id",
+    accessPersonalProfile: "GET /users/profile",
+    changePersonalProfile: "PUT /users/profile",
+    getForumCategories: "GET /forum",
+    getThreadsInCategory: "GET /forum/:nameOrIdOfCategory",
+    postThreadInCategory: "POST /forum/:nameOrIdOfCategory",
+    getThread: "GET /forum/threads/:id",
+    postReplyInThread: "POST /forum/threads/:id",
+  }});
 });
+
+module.exports = router;

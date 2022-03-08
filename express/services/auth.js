@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 
-var authService = {
+const authService = {
   // Create jwt & uuid reference
   signInUser: function(user) { 
     const newUuid = uuid.v4();
@@ -31,9 +31,28 @@ var authService = {
       return null;
     }
   },
-  // Compares decoded jwt to public cookie
-  crossReference: function(decoded, public) { // references jwt against public uuid
-    return(decoded.uuid === public);
+  // New authentication handler. Private cookie first parameter, public second
+  authenticateUser: function(private, public) {
+    try {
+    let reply = {ok: false, decoded: null, message: "", status: null}; //Sets object to send back. OK tells route if authentication successful, decoded is decoded token, & message + status is for 400 type responses.
+    if (!(private && public)) { 
+      reply.message = "Login token pair not found";
+      reply.status = 401;
+      return reply;       
+    } 
+    reply.decoded = authService.decodeToken(private); 
+    if (!(reply.decoded.uuid === public)) {
+      reply.message = "Invalid or expired token";
+      reply.status = 401;
+      return reply;
+    } else {
+      reply.ok = true;
+      return(reply);
+    }
+    } catch {
+      console.error(err);
+      return null;
+    }
   },
   // encrypts new user password
   hashPassword: function(plainTextPassword) {

@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "populate": "node ./create-test-db.js",
+    "drop": "node ./drop-test-db.js"
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.8",

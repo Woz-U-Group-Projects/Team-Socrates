@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class posts extends Model {
+  class friendRequests extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,39 +13,37 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  posts.init({
-    postId: {
+  friendRequests.init({
+    requestId: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: DataTypes.INTEGER,
     },
-    body: {
-      type: DataTypes.STRING(5000),
-      allowNull: false,
-    },
-    threadId: {
+    fromUser: {
       type: DataTypes.INTEGER,
-      references: {model: 'threads', key: 'threadId'},
       allowNull: false,
-    },
-    authorId: {
-      type: DataTypes.INTEGER,
       references: {model: 'users', key: 'userId'},
-      allowNull: false,
     },
-    status: {
+    toUser: {
       type: DataTypes.INTEGER,
-      defaultValue: 0,
+      allowNull: false,
+      references: {model: 'users', key: 'userId'},
     },
-    threadStarter: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-  }, {
+    }, {
     sequelize,
-    modelName: 'posts',
-    paranoid: true,
+    modelName: 'friendRequests',
+    name: {
+      singular: 'friendRequest',
+      plural: 'friendRequests'
+    },
+    validate: {
+      diffUsers() {
+        if ((this.fromUser === this.toUser)) {
+          throw new Error('A user cannot send a friend request to themselves!');
+        }
+      }
+    }
   });
-  return posts;
+  return friendRequests;
 };

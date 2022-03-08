@@ -50,6 +50,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     gender: {
       type: DataTypes.STRING(1),
+      validate: {
+        isIn: {
+            args: [['u', 'm', 'f', 'o']], //unspecified, male, female, other
+            msg: "Invalid gender option",
+      }},
       defaultValue: "u",
     },
     dateOfBirth: {

@@ -3,13 +3,14 @@
 module.exports = (models) => {
   models.users.hasMany(models.posts, {
     foreignKey: {
-    name: 'userId',
+    name: 'authorId',
     allowNull: false,
   }
 });
   models.posts.belongsTo(models.users, {
+    as: 'author',
     foreignKey: {
-    name: 'userId',
+    name: 'authorId',
     allowNull: false,
   }
 });
@@ -52,4 +53,57 @@ module.exports = (models) => {
       allowNull: false,
   }
 });
+  models.users.hasMany(models.mutualFriendships, {
+    foreignKey: {
+      name: 'userId',
+      allowNull: false,
+  }
+});
+  models.mutualFriendships.belongsTo(models.users, {
+    foreignKey: {
+      name: 'userId',
+      allowNull: false,
+  }
+});
+  models.users.hasMany(models.mutualFriendships, {
+    foreignKey: {
+      name: 'friendId',
+      allowNull: false,
+}
+});
+  models.mutualFriendships.belongsTo(models.users, {
+    as: 'friend',
+    foreignKey: {
+      name: 'friendId',
+      allowNull: false,
+  }
+});
+
+models.users.hasMany(models.friendRequests, {
+  foreignKey: {
+    name: 'fromUser',
+    allowNull: false,
+}
+});
+models.friendRequests.belongsTo(models.users, {
+  as: 'sender',
+  foreignKey: {
+    name: 'fromUser',
+    allowNull: false,
+}
+});
+models.users.hasMany(models.friendRequests, {
+  foreignKey: {
+    name: 'toUser',
+    allowNull: false,
+}
+});
+models.friendRequests.belongsTo(models.users, {
+  as: 'receiver',
+  foreignKey: {
+    name: 'toUser',
+    allowNull: false,
+}
+});
+
 }

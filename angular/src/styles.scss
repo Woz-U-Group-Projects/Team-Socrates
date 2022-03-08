@@ -2,3 +2,11 @@
 @import "../node_modules/normalize-scss/sass/normalize/import-now";
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.profilePic {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  border:1px solid #ccc;
+  object-fit: contain;
+  }

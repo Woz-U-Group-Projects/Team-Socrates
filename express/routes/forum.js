@@ -20,15 +20,18 @@ router.get('/', function(req, res, next){
 /* DELETE Forum, Admin Only */
 
 
-/* GET Category with threads */
-router.get('/:name', function(req, res, next){
+/* GET Threads in Category */
+router.get('/:nameOrId', function(req, res, next){
 models.categories.findOne({
   where: {
-    name: {
-      [Op.like]: req.params.name
-    }
+    [Op.or]: [
+      {name: {
+      [Op.like]: req.params.nameOrId
+    }},
+    {categoryId: req.params.nameOrId} 
+    ]
   },
-    include: [{model: models.threads, attributes: ['subject', 'threadId', 'authorId', 'createdAt', 'updatedAt'], include: [{model: models.users, as: 'author', attributes: ['userId', 'firstName', 'lastName', 'screenName']}]}]
+    include: [{model: models.threads, attributes: ['subject', 'threadId', 'createdAt', 'updatedAt'], include: [{model: models.users, as: 'author', attributes: ['userId', 'firstName', 'lastName', 'screenName']}]}]
 })
   .then(category => {
     if (!category){
@@ -45,31 +48,30 @@ models.categories.findOne({
 /* POST New Thread */
 
 // Trying async here for less messy looking code
-router.post('/:name', async function(req, res, next){
-  if (!(req.cookies.PRIVATE_ID && req.cookies.PUBLIC_ID)) {
-    res.status(401).send({ message: "Login tokens not found" });
-  } 
-  const decoded = authService.decodeToken(req.cookies.PRIVATE_ID);
-  if (!(authService.crossReference(decoded, req.cookies.PUBLIC_ID))) {
-    res.status(401).send({ message: "Invalid or expired token" });
-  }
-  if (!(req.body.subject && req.body.body)){
+router.post('/:nameOrId', async function(req, res, next){
+  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
+  if (auth.ok === false) {
+    res.status(auth.status).send(auth.message);
+  } else if (!(req.body.subject && req.body.body)){
     res.status(400).send({ message: "Missing fields" });
   } else {
     try {
       const category = await models.categories.findOne({
-        where: { name: { [Op.like]: req.params.name } },
+        where:
+        {[Op.or]: [{name: {[Op.like]: req.params.nameOrId}}, 
+        {categoryId: req.params.nameOrId}]
+        },
         attributes: ['categoryId', 'name']})
   
       const newThread = await models.threads.create({
           categoryId: category.categoryId,
-          authorId: decoded.userId,
+          authorId: auth.decoded.userId,
           subject: req.body.subject
         })
   
       const threadStarter = await models.posts.create({
             threadId: newThread.threadId,
-            userId: decoded.userId,
+            authorId: auth.decoded.userId,
             body: req.body.body,
             threadStarter: true, 
         })
@@ -103,7 +105,7 @@ router.get('/threads/:id', function(req, res, next){
         {
           model: models.posts, 
           attributes: postAttributes,
-          include: [{model: models.users, attributes: userAttributes}]
+          include: [{model: models.users, as: 'author', attributes: userAttributes}]
         },
         {
           model: models.categories,
@@ -123,20 +125,13 @@ router.get('/threads/:id', function(req, res, next){
 });
 /* POST Thread reply */
 router.post('/threads/:id', function(req, res, next){
-  if (!(req.cookies.PRIVATE_ID && req.cookies.PUBLIC_ID)) {
-    res.status(401).send({
-      message: "Login tokens not found"
-    })
-  } 
-  const decoded = authService.decodeToken(req.cookies.PRIVATE_ID);
-  if (!(authService.crossReference(decoded, req.cookies.PUBLIC_ID))) {
-    res.status(401).send({
-      message: "Invalid or expired token"
-    })
-  } else {
+  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
+  if (auth.ok === false) {
+    res.status(auth.status).send(auth.message);
+  } else  {
   models.posts.create({
     threadId: req.params.id,
-    userId: decoded.userId,
+    authorId: auth.decoded.userId,
     body: req.body.body,
   })
   .catch(err => {
