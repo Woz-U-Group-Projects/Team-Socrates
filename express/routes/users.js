@@ -23,7 +23,12 @@ router.get('/', function(req, res, next){
 
 // GET users friend list
 router.get('/id/:id/friends', async function(req, res, next){
-
+  const userFriendsList = await models.mutualFriendships.findAll({
+    where: { userId: req.params.id},
+    attributes: ['friendId', 'createdAt'],
+    include: [{model: models.users, as: 'friend', attributes: ['screenName', 'profilePic', 'firstName', 'lastName']}]
+   });
+  res.status(200).send(userFriendsList);
 });
 
 /* GET user profile. */

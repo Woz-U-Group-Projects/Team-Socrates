@@ -36,13 +36,13 @@ const authService = {
     try {
     let reply = {ok: false, decoded: null, message: "", status: null}; //Sets object to send back. OK tells route if authentication successful, decoded is decoded token, & message + status is for 400 type responses.
     if (!(private && public)) { 
-      reply.message = "Login token pair not found";
+      reply.message = {message: "Login token pair not found"};
       reply.status = 401;
       return reply;       
     } 
     reply.decoded = authService.decodeToken(private); 
     if (!(reply.decoded.uuid === public)) {
-      reply.message = "Invalid or expired token";
+      reply.message = {message: "Invalid or expired token"};
       reply.status = 401;
       return reply;
     } else {
