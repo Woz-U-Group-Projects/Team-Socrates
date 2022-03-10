@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const models = require('./models');
 const cors = require("cors");
+const authService = require('./services/auth');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -14,8 +15,8 @@ const socialRouter = require('./routes/social');
 const app = express();
 
  // hbs engine if needed
- app.set('views', path.join(__dirname, 'views'));
- app.set('view engine', 'hbs');
+ //app.set('views', path.join(__dirname, 'views'));
+ //app.set('view engine', 'hbs');
 
 
  const corsOptions = {
@@ -32,6 +33,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+// Check for user authentication
+app.use(function(req, res, next) {
+  res.locals.auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
+  next();
+});
 
 app.use('/api', indexRouter);
 app.use('/api/users', usersRouter);
@@ -50,8 +58,7 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500).send({message: err.message});
 });
 
 models.sequelize.sync().then(function() { 

@@ -105,5 +105,30 @@ models.friendRequests.belongsTo(models.users, {
     allowNull: false,
 }
 });
-
+models.users.hasMany(models.globalNotifications, {
+  foreignKey: {
+    name: 'actorId',
+    allowNull: false,
+  }
+});
+models.globalNotifications.belongsTo(models.users, {
+  as: 'actor',
+  foreignKey: {
+    name: 'actorId',
+    allowNull: false,
+  }
+});
+models.users.hasMany(models.userNotifications, {
+  foreignKey: {
+    name: 'recipientId',
+    allowNull: false,
+  }
+});
+models.userNotifications.belongsTo(models.users, {
+  as: 'recipient',
+  foreignKEy: {
+    name: 'recipientId',
+    allowNull: false,
+  }
+});
 }

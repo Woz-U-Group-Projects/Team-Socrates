@@ -49,9 +49,9 @@ models.categories.findOne({
 
 // Trying async here for less messy looking code
 router.post('/:nameOrId', async function(req, res, next){
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;  
+  if (!auth.loggedIn) {
+    res.status(401).send({messag: auth.message});
   } else if (!(req.body.subject && req.body.body)){
     res.status(400).send({ message: "Missing fields" });
   } else {
@@ -125,9 +125,9 @@ router.get('/threads/:id', function(req, res, next){
 });
 /* POST Thread reply */
 router.post('/threads/:id', function(req, res, next){
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   } else  {
   models.posts.create({
     threadId: req.params.id,

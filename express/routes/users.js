@@ -179,9 +179,9 @@ router.post('/login', function(req, res, next) {
 
 /* Account View */
 router.get('/profile', function(req, res, next) {
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   } else {
     models.users.findOne({
         where: {
@@ -217,9 +217,9 @@ router.get('/profile', function(req, res, next) {
 });
 
 router.put('/profile', function(req, res, next) {
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+    if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   }  else {
     models.users.update(
         {

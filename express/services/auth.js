@@ -31,26 +31,26 @@ const authService = {
       return null;
     }
   },
-  // New authentication handler. Private cookie first parameter, public second
+  // New authentication handler function. Private cookie first parameter, public second
   authenticateUser: function(private, public) {
     try {
-    let reply = {ok: false, decoded: null, message: "", status: null}; //Sets object to send back. OK tells route if authentication successful, decoded is decoded token, & message + status is for 400 type responses.
+    let auth = {loggedIn: false, decoded: null, message: ""}; //Sets object to send back. OK tells route if authentication successful, decoded is decoded token, & message + status is for 400 type responses.
     if (!(private && public)) { 
-      reply.message = {message: "Login token pair not found"};
-      reply.status = 401;
-      return reply;       
+      auth.message = "No login token pair.";
+      return auth;       
     } 
-    reply.decoded = authService.decodeToken(private); 
-    if (!(reply.decoded.uuid === public)) {
-      reply.message = {message: "Invalid or expired token"};
-      reply.status = 401;
-      return reply;
+    auth.decoded = authService.decodeToken(private); 
+    if (!(auth.decoded.uuid === public)) {
+      auth.message = "Invalid or expired token.";
+      return auth;
     } else {
-      reply.ok = true;
-      return(reply);
+      auth.loggedIn = true;
+      auth.message = "User logged in.";
+      return(auth);
     }
     } catch {
       console.error(err);
+      auth.messsage = "Internal server error"
       return null;
     }
   },

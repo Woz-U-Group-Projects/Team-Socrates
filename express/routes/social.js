@@ -7,9 +7,9 @@ const { Op } = require("sequelize");
 
 //GET Incoming Friend Requests
 router.get('/friends/incomingRequests', async function(req, res, next){
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   } else {
   try {
     const incomingRequests = await models.friendRequests.findAll({
@@ -26,9 +26,9 @@ router.get('/friends/incomingRequests', async function(req, res, next){
 });
 //GET Outgoing Sent Friend Requests
 router.get('/friends/pendingRequests', async function(req, res, next){
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   } else {
     const pendingRequests = await models.friendRequests.findAll({
       where: { fromUser: auth.decoded.userId},
@@ -39,9 +39,9 @@ router.get('/friends/pendingRequests', async function(req, res, next){
 });
 //POST Send Friend Request
 router.post('/friends/newRequest', async function(req, res, next){
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   } else {
     const existingRequest = 
     await models.friendRequests.findOne(
@@ -63,9 +63,9 @@ router.post('/friends/newRequest', async function(req, res, next){
 });
 //PUT Accept Friend Request
 router.put('/friends/incomingRequests/:id', async function(req, res, next){
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   } else {
     const requestToAccept = await models.friendRequests.findOne({where: {toUser: auth.decoded.userId, fromUser: req.params.id}});
     if (!(requestToAccept)) {
@@ -80,9 +80,9 @@ router.put('/friends/incomingRequests/:id', async function(req, res, next){
 });
 //DELETE Reject Friend Request
 router.delete('/friends/incomingRequests/:id', async function(req, res, next){
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   } else {
     const rejectedRequest = await models.friendRequests.findOne({where: {toUser: auth.decoded.userId, fromUser: req.params.id}});
     if (!(rejectedRequest)) {
@@ -96,9 +96,9 @@ router.delete('/friends/incomingRequests/:id', async function(req, res, next){
 
 //DELETE Cancel Sent Friend Request
 router.delete('/friends/pendingRequests/:id', async function(req, res, next){
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   } else  {
     const rescindedRequest = await models.friendRequests.findOne({where: {fromUser: auth.decoded.userId, toUser: req.params.id}});
     if (!(rescindedRequest)) {
@@ -112,9 +112,9 @@ router.delete('/friends/pendingRequests/:id', async function(req, res, next){
 
 //GET Your friend list
 router.get('/friends', async function(req, res, next){
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   } else {
     const friendsList = await models.mutualFriendships.findAll({
       where: { userId: auth.decoded.userId},
@@ -127,9 +127,9 @@ router.get('/friends', async function(req, res, next){
 
 //DELETE Unfriend
 router.delete('/friends/:id', async function(req, res, next){
-  const auth = authService.authenticateUser(req.cookies.PRIVATE_ID, req.cookies.PUBLIC_ID);
-  if (auth.ok === false) {
-    res.status(auth.status).send(auth.message);
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
   } else {
     const unfriend = await models.mutualFriendships.findOne({where: {userId: auth.decoded.userId, friendId: req.params.id}});
     const unfriend2 = await models.mutualFriendships.findOne({where: {friendId: auth.decoded.userId, userId: req.params.id}});
