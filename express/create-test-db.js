@@ -42,6 +42,11 @@ models.sequelize.sync().then(async function() {
       {userId: 5, friendId: 3},
       {userId: 3, friendId: 5},
     ])
+    await models.userFollows.bulkCreate([
+      {followerId: 3, followingId: 1},
+      {followerId: 5, followingId: 3},
+      {followerId: 1, followingId: 5},
+    ])
     console.log('\x1b[32m%s\x1b[0m', 'Test Database populated');
   }
   catch {

@@ -30,7 +30,6 @@ router.get('/id/:id/friends', async function(req, res, next){
    });
   res.status(200).send(userFriendsList);
 });
-
 /* GET user profile. */
 router.get('/id/:id', function(req, res, next) {
   models.users.findOne({
@@ -250,5 +249,23 @@ router.put('/profile', function(req, res, next) {
         })
       })
     }
+});
+router.get('/notifications', async function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+  res.status(401).send({message: auth.message});
+}  else {
+  const notifications = models.userNotifications.findAll({where: {recipientId: auth.decoded.userId}});
+  res.status(200).send(notifications);
+}
+});
+router.put('/notifications/:id', async function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+  res.status(401).send({message: auth.message});
+}  else {
+  models.userNotifications.update({readStatus: true}, {where: {notificationId: req.params.id, recipientId: auth.decoded.userId}});
+} 
+res.status(204).send();
 });
 module.exports = router;

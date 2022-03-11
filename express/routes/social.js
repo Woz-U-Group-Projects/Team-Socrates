@@ -3,7 +3,7 @@ const router = express.Router();
 const models = require ('../models');
 const authService = require('../services/auth');
 const { Op } = require("sequelize");
-
+const notificationGenService = require('../services/notificationGen');
 
 //GET Incoming Friend Requests
 router.get('/friends/incomingRequests', async function(req, res, next){
@@ -57,6 +57,8 @@ router.post('/friends/newRequest', async function(req, res, next){
           if (existingFriend){res.status(400).send({message: 'That user is already friended.'})
         } else {
         const newRequest = await models.friendRequests.create({fromUser: auth.decoded.userId, toUser: req.body.toUser});
+        console.log('Gen Service coming');
+        notificationGenService.globalFilter(newRequest, 1);
         res.status(201).send(newRequest);
         }
   }};
@@ -143,4 +145,37 @@ router.delete('/friends/:id', async function(req, res, next){
   }
 });
 
+router.get('/followers', async function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
+  } else {
+    const followers = await models.userFollows.findAll({where: {followingId: auth.decoded.userId}, include: 'follower'});
+    res.status(200).send(followers);
+  }
+});
+router.get('/following', async function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
+  } else {
+    const following = await models.userFollows.findAll({where: {followerId: auth.decoded.userId}, include: 'following'});
+    res.status(200).send(following);
+  }
+});
+router.post('/following/:id', async function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
+  } else if (req.params.id === auth.decoded.userId) {
+    res.status(400).send({message: "You cannot follow yourself!"})
+  } else {
+    const newFollow = await models.userFollows.findOrCreate({where: {followerId: auth.decoded.userId, followingId: req.params.id}});
+    if (newFollow.isNewRecord) {
+      res.status(200).send(newFollow);
+    } else {
+      res.status(409).send({message: "You already follow that user."})
+    }
+  }
+});
 module.exports = router;

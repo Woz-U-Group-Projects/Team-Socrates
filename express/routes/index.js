@@ -3,9 +3,10 @@ const router = express.Router();
 const models = require ('../models');
 const authService = require('../services/auth');
 const { Op } = require("sequelize");
+const notificationGenService = require('../services/notificationGen');
 
-
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
+  notificationGenService.globalFilter(1, 1)
   res.send({routes: {
     signup: "POST /users",
     login: "POST /users/login",
