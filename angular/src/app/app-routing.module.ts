@@ -1,5 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AccountModule } from './account/account.module';
+import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './login/login.component';
+import { LoginModule } from './login/login.module';
+import { Account } from './shared/models';
+import { SignupModule } from './signup/signup.module';
 
 const routes: Routes = [
   {
@@ -30,3 +36,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+
