@@ -14,7 +14,7 @@ module.exports = (models) => {
     allowNull: false,
   }
 });
-  // 1 : n User Threads
+  // 1 : n Author to Threads
   models.users.hasMany(models.threads, {
     foreignKey: {
       name: 'authorId',
@@ -28,6 +28,10 @@ module.exports = (models) => {
       allowNull: false,
   }
 });
+  // m : n Subscribers to Threads
+  models.users.belongsToMany(models.threads, {through: 'threadSubscriptions', as: 'subscribedThreads', foreignKey: 'subscriberId'});
+  models.threads.belongsToMany(models.users, {through: 'threadSubscriptions', as: 'subscribers', foreignKey: 'threadId'});
+  
   // 1 : n Threads Posts
   models.threads.hasMany(models.posts, {
     foreignKey: {
@@ -109,17 +113,21 @@ models.friendRequests.belongsTo(models.users, {
 }
 });
 // n : m Follower & Following + userFollows aliases
-models.users.belongsToMany(models.users, {through: 'userFollows', as: 'follower', foreignKey: 'followerId'});
-models.users.belongsToMany(models.users, {through: 'userFollows', as: 'following', foreignKey: 'followingId'});
+models.users.belongsToMany(models.users, {through: 'userFollows', as: 'followers', foreignKey: 'followingId'});
+models.users.belongsToMany(models.users, {through: 'userFollows', as: 'following', foreignKey: 'followerId'});
 models.userFollows.belongsTo(models.users, {
-  foreignKey: 'followerId',
-  as: 'follower',
-  allowNull: false,
+  as: 'followers',
+  foreignKey: {
+    name: 'followerId',
+    allowNull: false,
+  }
 });
 models.userFollows.belongsTo(models.users, {
-  foreignKey: 'followingId',
   as: 'following',
-  allowNull: false,
+  foreignKey: {
+    name: 'followingId',
+    allowNull: false,
+  }
 });
 
 // 1 : n Actor to Global Notifications
@@ -163,4 +171,14 @@ models.userNotifications.belongsTo(models.users, {
     allowNull: false,
   }
 });
+  // m : n Members to Groups
+  models.users.belongsToMany(models.groups, {through: 'groupMembers', as: 'groups', foreignKey: 'userId'});
+  models.groups.belongsToMany(models.users, {through: 'groupMembers', as: 'members', foreignKey: 'threadId'});
+  // 1 : n Group to Posts
+  models.groups.hasMany(models.groupPosts, {foreignKey: {name: 'groupId', allowNull: false}, as: 'groupPosts'});
+  models.groupPosts.belongsTo(models.groups, {foreignKey: {name: 'groupId', allowNull: false}});
+  // 1 : n User to Group Posts
+  models.users.hasMany(models.groupPosts, {foreignKey: {name: 'authorId', allowNull: false}, as: 'groupPosts'});
+  models.groupPosts.belongsTo(models.users, {foreignKey: {name: 'authorId', allowNull: false}, as: 'author'});
 }
+

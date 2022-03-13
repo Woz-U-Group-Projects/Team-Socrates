@@ -3,8 +3,7 @@ const router = express.Router();
 const models = require ('../models');
 const authService = require('../services/auth');
 const { Op } = require("sequelize");
-
-
+const upload = require('../app');
 router.get('/', function(req, res, next){
   models.users.findAll({
     attributes:
@@ -214,7 +213,17 @@ router.get('/profile', function(req, res, next) {
       });
   }
 });
-
+router.post('/profile/pic', upload.single('profilepic'), function(req, res, next) {
+    const auth = res.locals.auth;
+      if (!auth.loggedIn) {
+      res.status(401).send({message: auth.message});
+    }  else {
+      models.users.update({profilePic: req.file.filename}, {where: {userId: auth.decoded.userId}});
+      res.status(201).send({message: 'New Profile Picture Uploaded'})
+    }
+}, function(err, req, res, next){
+  res.status(400).send({message: error.message});
+});
 router.put('/profile', function(req, res, next) {
   const auth = res.locals.auth;
     if (!auth.loggedIn) {
@@ -250,22 +259,44 @@ router.put('/profile', function(req, res, next) {
       })
     }
 });
+//GET Notifications List
 router.get('/notifications', async function(req, res, next){
   const auth = res.locals.auth;
   if (!auth.loggedIn) {
   res.status(401).send({message: auth.message});
 }  else {
-  const notifications = models.userNotifications.findAll({where: {recipientId: auth.decoded.userId}});
+  const notifications = await models.userNotifications.findAll({where: {recipientId: auth.decoded.userId}, include: {model: models.globalNotifications, attributes: ['actorId', 'entityId', 'entityActionType']}});
   res.status(200).send(notifications);
 }
 });
-router.put('/notifications/:id', async function(req, res, next){
+//PUT Set all notifications as read
+router.put('/notifications', async function(req, res, next){
   const auth = res.locals.auth;
   if (!auth.loggedIn) {
   res.status(401).send({message: auth.message});
 }  else {
-  models.userNotifications.update({readStatus: true}, {where: {notificationId: req.params.id, recipientId: auth.decoded.userId}});
+  await models.userNotifications.update({readStatus: true}, {where: {recipientId: auth.decoded.userId}});
+  res.status(204).send();
+}
+});
+//PUT Set Notification read status
+router.put('/notifications/:id', function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+  res.status(401).send({message: auth.message});
+}  else {
+  models.userNotifications.update({readStatus: req.body.readStatus}, {where: {notificationId: req.params.id, recipientId: auth.decoded.userId}});
 } 
 res.status(204).send();
+});
+//DELETE Notification
+router.delete('/notifications/:id', async function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+  res.status(401).send({message: auth.message});
+}  else {
+  models.userNotifications.delete({where: {notificationId: req.params.id, recipientId: auth.decoded.userId}});
+  res.status(204).send;
+}
 });
 module.exports = router;

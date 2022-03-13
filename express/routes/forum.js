@@ -3,10 +3,11 @@ const router = express.Router();
 const models = require ('../models');
 const authService = require('../services/auth');
 const { Op } = require("sequelize");
+const notificationGenService = require('../services/notificationGen');
 
 
 /* GET All Forum Categories */
-router.get('/', function(req, res, next){
+router.get('/categories', function(req, res, next){
   models.categories.findAll()
   .then(categories => {res.send(categories)})
   .catch(err => {
@@ -21,7 +22,7 @@ router.get('/', function(req, res, next){
 
 
 /* GET Threads in Category */
-router.get('/:nameOrId', function(req, res, next){
+router.get('/categories/:nameOrId', function(req, res, next){
 models.categories.findOne({
   where: {
     [Op.or]: [
@@ -46,9 +47,7 @@ models.categories.findOne({
   })
 });
 /* POST New Thread */
-
-// Trying async here for less messy looking code
-router.post('/:nameOrId', async function(req, res, next){
+router.post('/categories/:nameOrId', async function(req, res, next){
   const auth = res.locals.auth;  
   if (!auth.loggedIn) {
     res.status(401).send({messag: auth.message});
@@ -61,21 +60,22 @@ router.post('/:nameOrId', async function(req, res, next){
         {[Op.or]: [{name: {[Op.like]: req.params.nameOrId}}, 
         {categoryId: req.params.nameOrId}]
         },
-        attributes: ['categoryId', 'name']})
+        attributes: ['categoryId', 'name']});
   
       const newThread = await models.threads.create({
           categoryId: category.categoryId,
           authorId: auth.decoded.userId,
           subject: req.body.subject
-        })
+        });
   
       const threadStarter = await models.posts.create({
             threadId: newThread.threadId,
             authorId: auth.decoded.userId,
             body: req.body.body,
             threadStarter: true, 
-        })
+        });
       res.status(201).send({message: "Thread successfully created", thread: newThread, threadStarter: threadStarter, postedIn: category});
+      notificationGenService.generate(newThread, 4);
     } catch {
       console.error(err);
       res.status(500).send({
@@ -124,37 +124,87 @@ router.get('/threads/:id', function(req, res, next){
   })
 });
 /* POST Thread reply */
-router.post('/threads/:id', function(req, res, next){
+router.post('/threads/:id', async function(req, res, next){
   const auth = res.locals.auth;
   if (!auth.loggedIn) {
     res.status(401).send({message: auth.message});
   } else  {
-  models.posts.create({
-    threadId: req.params.id,
+    try{
+  const newPost = await models.posts.create({
+    threadId: parseInt(req.params.id),
     authorId: auth.decoded.userId,
     body: req.body.body,
-  })
-  .catch(err => {
-    console.error(err);
-    res.status(500).send({
-      message: err.message
-    })
-  })
-  models.threads.update(
+  });
+  await models.threads.update(
     { lastBumped: Date() },
     { where: {threadId: req.params.id} }
   )
-  .then(
-    res.status(201).send({
-      message: 'Message posted'
-    })
-  )
-  .catch(err => {
+    res.status(201).send({newPost});
+
+  notificationGenService.generate(newPost, 5);
+  } catch {
     console.error(err);
     res.status(500).send({
       message: err.message
     })
-  })
+  }
+  }
+});
+// Get all subscriptions
+router.get('/subscriptions', async function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
+  } else  {
+    const subscriptions = await models.threadSubscriptions.findAll({where: {subscriberId: auth.decoded.userId}});
+    res.status(200).send(subscriptions);
+  }
+});
+// See if subscription exists
+router.get('/subscriptions/:id', async function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
+  } else  {
+    const subscription = await models.threadSubscriptions.findOne({where: {subscriberId: auth.decoded.userId, threadId: parseInt(req.params.id)}});
+    if (!subscription){
+      res.status(404).send({message: "Subscription not found"})
+    }
+    res.status(200).send(subscription);
+  }
+});
+// Subscribe to Thread
+router.post('/subscriptions/:id', function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
+  } else  {
+    models.threadSubscriptions.findOrCreate({where: {subscriberId: auth.decoded.userId, threadId: parseInt(req.params.id)}})
+    .then(([subscription, created]) =>{
+      if (created){
+        res.status(200).send(subscription);
+      } else {
+        res.status(409).send({message: "Subscription already exists"});
+      }
+    })
+    .catch(err => {
+      console.error(err)
+    });
+  }
+});
+// Unsubscribe
+router.delete('/subscriptions/:id', async function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
+  } else  {
+    const unSub = await models.threadSubscriptions.findOne({where: {subscriberId: auth.decoded.userId, threadId: parseInt(req.params.id)}});
+    if (unSub){
+      unSub.destroy();
+      res.status(204).send();
+    } else {
+      res.status(404).send({message: "Subscription not found"});
+    }
   }
 });
 /* PUT Forum Post */

@@ -21,9 +21,9 @@ router.get('/friends/incomingRequests', async function(req, res, next){
    console.error(err);
    res.status(500).send(err.message);
   }
- 
   }
 });
+
 //GET Outgoing Sent Friend Requests
 router.get('/friends/pendingRequests', async function(req, res, next){
   const auth = res.locals.auth;
@@ -37,8 +37,9 @@ router.get('/friends/pendingRequests', async function(req, res, next){
   res.send(pendingRequests);
   }
 });
+
 //POST Send Friend Request
-router.post('/friends/newRequest', async function(req, res, next){
+router.post('/friends/newRequest/:id', async function(req, res, next){
   const auth = res.locals.auth;
   if (!auth.loggedIn) {
     res.status(401).send({message: auth.message});
@@ -46,20 +47,19 @@ router.post('/friends/newRequest', async function(req, res, next){
     const existingRequest = 
     await models.friendRequests.findOne(
       {where: {[Op.and]: 
-        [{fromUser: {[Op.or]: [auth.decoded.userId, req.body.toUser]}}, 
-         {toUser: {[Op.or]: [auth.decoded.userId, req.body.toUser]}},
+        [{fromUser: {[Op.or]: [auth.decoded.userId, req.params.id]}}, 
+         {toUser: {[Op.or]: [auth.decoded.userId, req.params.id]}},
         ]}});
    
       if (existingRequest){
         res.status(400).send({existingRequest});
       } else { 
-        const existingFriend = await models.mutualFriendships.findOne({where: {userId: auth.decoded.userId, friendId: req.body.toUser}});
+        const existingFriend = await models.mutualFriendships.findOne({where: {userId: auth.decoded.userId, friendId: req.params.id}});
           if (existingFriend){res.status(400).send({message: 'That user is already friended.'})
         } else {
-        const newRequest = await models.friendRequests.create({fromUser: auth.decoded.userId, toUser: req.body.toUser});
-        console.log('Gen Service coming');
-        notificationGenService.globalFilter(newRequest, 1);
+        const newRequest = await models.friendRequests.create({fromUser: auth.decoded.userId, toUser: parseInt(req.params.id)});
         res.status(201).send(newRequest);
+        notificationGenService.generate(newRequest, 1);
         }
   }};
 });
@@ -73,9 +73,10 @@ router.put('/friends/incomingRequests/:id', async function(req, res, next){
     if (!(requestToAccept)) {
       res.status(400).send({message: "No friend request found."});  
     } else {
-      await models.mutualFriendships.create({userId: auth.decoded.userId, friendId: requestToAccept.fromUser});
+      const newFriend = await models.mutualFriendships.create({userId: auth.decoded.userId, friendId: requestToAccept.fromUser});
       await models.mutualFriendships.create({userId: requestToAccept.fromUser, friendId: auth.decoded.userId});
       await requestToAccept.destroy();
+      notificationGenService.generate(newFriend, 2);
       res.status(200).send({message: "Friend accepted."});
     }
   }
@@ -144,38 +145,52 @@ router.delete('/friends/:id', async function(req, res, next){
     }
   }
 });
-
+// Get Followers
 router.get('/followers', async function(req, res, next){
   const auth = res.locals.auth;
   if (!auth.loggedIn) {
     res.status(401).send({message: auth.message});
   } else {
-    const followers = await models.userFollows.findAll({where: {followingId: auth.decoded.userId}, include: 'follower'});
+    const followers = await models.userFollows.findAll({where: {followingId: auth.decoded.userId}, include: [{model: models.users, as: 'followers', attributes: ['screenName', 'firstName', 'lastName', 'profilePic']}], attributes: ['followerId']});
     res.status(200).send(followers);
   }
 });
+// Get Following
 router.get('/following', async function(req, res, next){
   const auth = res.locals.auth;
   if (!auth.loggedIn) {
     res.status(401).send({message: auth.message});
   } else {
-    const following = await models.userFollows.findAll({where: {followerId: auth.decoded.userId}, include: 'following'});
+    const following = await models.userFollows.findAll({where: {followerId: auth.decoded.userId}, include: [{model: models.users, as: 'following', attributes: ['screenName', 'firstName', 'lastName', 'profilePic']}], attributes: ['followingId']});
     res.status(200).send(following);
   }
 });
-router.post('/following/:id', async function(req, res, next){
+// New Follower
+router.post('/following/:id', function(req, res, next){
   const auth = res.locals.auth;
   if (!auth.loggedIn) {
     res.status(401).send({message: auth.message});
   } else if (req.params.id === auth.decoded.userId) {
     res.status(400).send({message: "You cannot follow yourself!"})
   } else {
-    const newFollow = await models.userFollows.findOrCreate({where: {followerId: auth.decoded.userId, followingId: req.params.id}});
-    if (newFollow.isNewRecord) {
-      res.status(200).send(newFollow);
-    } else {
-      res.status(409).send({message: "You already follow that user."})
-    }
+    models.userFollows.findOrCreate({where: {followerId: auth.decoded.userId, followingId: parseInt(req.params.id)}})
+    .then(([userFollows, created]) =>{
+      if (created){
+        res.status(200).send(userFollows);
+      } else {
+        res.status(409).send({message: "You already follow that user."})
+      }
+    });
   }
 });
+// Unfollow
+router.delete('/following/:id', async function(req, res, next){
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({message: auth.message});
+  } else {
+    await models.userFollows.delete({where: {followerId: auth.decoded.userId, followingId: req.params.id}});
+    res.status(204).send();
+  }
+})
 module.exports = router;

@@ -3,6 +3,25 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const multer = require('multer');
+const fileStorageEngine = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, './public/images');
+  },
+  filename: (req, file, callback) => {
+    callback(null, Date.now() + "--" + file.originalname);
+  },
+});
+const upload = multer({storage: fileStorageEngine, limits: {fileSize: 2000000}, fileFilter(req, file, cb){
+  if (!file.originalname.match(/\.(png|jpg)$/)) { 
+    // upload only png and jpg format
+    return cb(new Error('Please upload a png or jpg image'));
+  }
+cb(undefined, true);
+}});
+module.exports = upload;
+
+
 const models = require('./models');
 const cors = require("cors");
 const authService = require('./services/auth');
@@ -11,6 +30,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const forumRouter = require('./routes/forum');
 const socialRouter = require('./routes/social');
+const testRouter = require('./routes/test')
 
 const app = express();
 
@@ -45,7 +65,7 @@ app.use('/api', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/forum', forumRouter);
 app.use('/api/social', socialRouter);
-
+app.use('/api/test', testRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

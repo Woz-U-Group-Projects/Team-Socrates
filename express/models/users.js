@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     profilePic: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       allowNull: true,
       defaultValue: null,
     },
