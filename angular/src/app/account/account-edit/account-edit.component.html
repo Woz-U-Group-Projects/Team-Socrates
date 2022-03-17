@@ -1,13 +1,15 @@
-<form (ngSubmit)="update()">
+<form (ngSubmit)="update()" enctype="multipart/form-data">
   <mat-form-field>
     <mat-label>Screen Name</mat-label>
     <input matInput name="screenName" [(ngModel)]="currentInfo.screenName">
   </mat-form-field>
+    <mat-label>Profile Pic</mat-label>
+    <input name="profilePic" type="file" [(ngModel)]="currentInfo.profilePic">
   <mat-form-field>
     <mat-label>Email</mat-label>
     <input matInput name="email" [(ngModel)]="currentInfo.email">
   </mat-form-field>
-  <mat-form-field>
+    <mat-form-field>
     <mat-label>First Name</mat-label>
     <input matInput name="firstName" [(ngModel)]="currentInfo.firstName">
   </mat-form-field>
@@ -24,7 +26,6 @@
       <mat-option value="u">Prefer Not to Say</mat-option>
     </mat-select>
   </mat-form-field>
-
   <mat-form-field>
     <mat-label>Enter Date of Birth</mat-label>
     <input matInput [matDatepicker]="picker" name="dateOfBirth" [(ngModel)]="currentInfo.dateOfBirth">
@@ -42,8 +43,6 @@
     <mat-label>Country</mat-label>
     <input matInput name="country" [(ngModel)]="currentInfo.country">
   </mat-form-field>
-
-
   <mat-form-field>
     <mat-label>Area of Study</mat-label>
     <input matInput name="areaOfStudy" [(ngModel)]="currentInfo.areaOfStudy">

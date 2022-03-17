@@ -1,0 +1,20 @@
+<ng-template>
+  <ul>
+    <li *ngFor="let user of users; let i = index">
+      <a [routerLink]="['/users/', user.userId]">
+        <app-profile-pic [profilePicName]="user.profilePic" imageSize="thumb"></app-profile-pic>
+        <span>{{user.screenName}}</span>
+      </a>
+    </li>
+  </ul>
+</ng-template>
+<div class="listWrapper">
+  <ul>
+    <li *ngFor="let user of users; let i = index">
+      <a [routerLink]="['/users/', user.userId]">
+        <app-profile-pic [profilePicName]="user.profilePic" imageSize="thumb"></app-profile-pic>
+        <span>{{user.screenName}}</span>
+      </a>
+    </li>
+  </ul>
+</div>

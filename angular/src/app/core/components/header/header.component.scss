@@ -1,0 +1,13 @@
+.spacer{
+  flex: 1 1 auto;
+}
+.navbar{
+  display: flex;
+  justify-content: space-around;
+}
+
+button {
+  padding-right: 1rem;
+  color: whitesmoke;
+  font-size: .9em;
+}

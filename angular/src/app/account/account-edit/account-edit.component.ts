@@ -1,4 +1,5 @@
 import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Account } from 'src/app/shared/models';
 @Component({
   selector: 'app-account-edit',
@@ -16,9 +17,10 @@ export class AccountEditComponent implements OnInit {
   update(){
     this.submit.emit(this.currentInfo);
   }
-  constructor() { }
+  constructor(private titleService: Title) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Account Edit | Zone Connect');
   }
 
 }

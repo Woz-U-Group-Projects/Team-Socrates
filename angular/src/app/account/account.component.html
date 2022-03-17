@@ -1,5 +1,10 @@
 <div>
-  <h1>Account</h1>
-  <app-account-view *ngIf="!(editMode) && initialized" (modeChange)="editMode=$event" [currentInfo]="userAccount"></app-account-view>
+  <h1>Your Account</h1>  
+  <button mat-button (click)="editMode=(!editMode)" *ngIf="!(editMode) && initialized">Edit Account Information</button>
+</div>
+<div>
+  <app-user-profile *ngIf="!(editMode) && initialized" [profile]="userAccount"></app-user-profile>
   <app-account-edit *ngIf="editMode && initialized" (modeChange)="editMode=$event" (submit)="onSubmit($event)" [currentInfo]="userAccount"></app-account-edit>
 </div>
+
+

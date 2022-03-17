@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { AccountRoutingModule } from './account-routing.module';
 import { AccountComponent } from './account.component';
 import { AccountEditComponent } from './account-edit/account-edit.component';
-import { AccountViewComponent } from './account-view/account-view.component';
 
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -15,11 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { SharedModule } from '../shared/shared.module';
 @NgModule({
-  declarations: [
-    AccountComponent,
-    AccountEditComponent,
-    AccountViewComponent,
-  ],
+  declarations: [AccountComponent, AccountEditComponent],
   imports: [
     CommonModule,
     AccountRoutingModule,
@@ -30,6 +25,6 @@ import { SharedModule } from '../shared/shared.module';
     MatSelectModule,
     MatInputModule,
     SharedModule,
-  ]
+  ],
 })
-export class AccountModule { }
+export class AccountModule {}

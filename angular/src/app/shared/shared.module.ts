@@ -4,13 +4,23 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { NavbarComponent } from './components/navbar/navbar.component';
 import { MatCommonModule } from '@angular/material/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { AgePipe } from './pipes/age.pipe';
 import { GenderPipe } from './pipes/gender.pipe';
+import { MatButtonModule } from '@angular/material/button';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { ProfilePicComponent } from './components/profile-pic/profile-pic.component';
+import { UsersListComponent } from './components/users-list/users-list.component';
+
 @NgModule({
-  declarations: [ NavbarComponent, AgePipe, GenderPipe,],
+  declarations: [
+    AgePipe,
+    GenderPipe,
+    UserProfileComponent,
+    ProfilePicComponent,
+    UsersListComponent,
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -19,9 +29,9 @@ import { GenderPipe } from './pipes/gender.pipe';
     RouterModule,
     MatCommonModule,
     MatToolbarModule,
+    MatButtonModule,
   ],
   exports: [
-    NavbarComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -30,8 +40,11 @@ import { GenderPipe } from './pipes/gender.pipe';
     MatCommonModule,
     MatToolbarModule,
     AgePipe,
-    GenderPipe
-  ]
-
+    GenderPipe,
+    UserProfileComponent,
+    ProfilePicComponent,
+    UsersListComponent,
+  ],
+  providers: [],
 })
-export class SharedModule { }
+export class SharedModule {}

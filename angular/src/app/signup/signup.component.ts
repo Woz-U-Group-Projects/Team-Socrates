@@ -1,25 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../core/services/api.service';
-import { first } from 'rxjs'
+import { Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss']
+  styleUrls: ['./signup.component.scss'],
 })
 export class SignupComponent implements OnInit {
-  newUser: any = {username: '', password: '', email: '', screenName: ''};
+  newUser: any = { username: '', password: '', email: '', screenName: '' };
   private apiRoute = 'users';
   userSubmit() {
-    this._ApiService.post(this.apiRoute, this.newUser).pipe(first()).subscribe({
-      next: res => console.log(res),
-      error: err => {console.error(err)},
-    }
-    
-    )
+    this._ApiService.post(this.apiRoute, this.newUser).subscribe({
+      next: (res) => console.log(res),
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => this.router.navigate(['/login']),
+    });
   }
-  constructor(private _ApiService: ApiService) { }
+  constructor(
+    private _ApiService: ApiService,
+    private titleService: Title,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    this.titleService.setTitle('Sign Up | Zone Connect');
   }
-
 }

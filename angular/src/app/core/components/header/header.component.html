@@ -1,0 +1,15 @@
+<mat-toolbar color="primary" class="navbar">
+  
+  <span class="title">Zone Connect</span>
+  
+  <div class="spacer"></div>
+  
+  
+  <a routerLink="/home"><button mat-button>Home</button></a>
+  <a routerLink="/account" *ngIf="loggedIn"><button mat-button>My Account</button></a>
+  <a routerLink="/logout" *ngIf="loggedIn"><button mat-button>Log out</button></a>
+  <a routerLink="/signup" *ngIf="(!loggedIn)"><button mat-button>Sign up</button></a>
+  <a routerLink="/login" *ngIf="(!loggedIn)"><button mat-button>Log in</button></a>
+  
+  
+</mat-toolbar>
