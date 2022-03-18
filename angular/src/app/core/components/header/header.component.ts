@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { SessionManagerService } from 'src/app/core/services/session-manager.service';
 import { Subscription, map } from 'rxjs';
@@ -10,6 +10,11 @@ import { Subscription, map } from 'rxjs';
 export class HeaderComponent implements OnInit {
   loggedIn: boolean = false;
   timer: string;
+  @Output() sidenavToggle = new EventEmitter();
+  sidenav: boolean = false;
+  toggle() {
+    this.sidenavToggle.emit();
+  }
   constructor(
     private sessionManagerService: SessionManagerService,
     private router: Router
@@ -28,6 +33,7 @@ export class HeaderComponent implements OnInit {
       },
     });
   }
+
   sessionTime() {
     this.sessionManagerService.sessionTimer.subscribe({
       next: (num) => {

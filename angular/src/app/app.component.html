@@ -1,2 +1,12 @@
-<app-header></app-header>
-<router-outlet></router-outlet>
+<div class="app-container">
+  <app-header (sidenavToggle)="navbar=!navbar"></app-header>
+  <mat-sidenav-container class="app-body">
+    <mat-sidenav #sidenav position="end" mode="side" [(opened)]="navbar">
+      <a routerLink="/logout"><button mat-button (click)="toggle()">Log out</button></a>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>  
+</div>
+

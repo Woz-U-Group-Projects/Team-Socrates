@@ -12,7 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { ProfilePicComponent } from './components/profile-pic/profile-pic.component';
 import { UsersListComponent } from './components/users-list/users-list.component';
-
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatListModule } from '@angular/material/list';
 @NgModule({
   declarations: [
     AgePipe,
@@ -30,6 +31,8 @@ import { UsersListComponent } from './components/users-list/users-list.component
     MatCommonModule,
     MatToolbarModule,
     MatButtonModule,
+    MatExpansionModule,
+    MatListModule,
   ],
   exports: [
     CommonModule,

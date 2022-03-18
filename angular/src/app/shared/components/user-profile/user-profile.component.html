@@ -1,19 +1,22 @@
 <div class="profile">
   <app-profile-pic imageSize="normal" [profilePicName]="profile.profilePic"></app-profile-pic>
   <div class="profileMain">
-    <ul>
-      <li class="screenName">Screen Name: {{profile.screenName}}</li>
-      <li class="firstName">First Name: {{profile.firstName}}</li>
-      <li class="lastName">Last Name: {{profile.lastName}}</li>
-      <li class="gender">Gender: {{profile.gender | gender}}</li>
-      <li class="age">Age: {{profile.dateOfBirth | age}}</li>
-      <li class="birthday">Birthday: {{profile.dateOfBirth | date: 'MMMM d'}}</li>
-      <li class="location">Location: {{profile.city + ' ' + profile.region + ' ' + profile.country}}</li>
-      <li class="areaOfStudy">Area of Study: {{profile.areaOfStudy}}</li>
-      <li class="bio">Bio: {{profile.bio}}</li>
-    </ul>
+    
+    <mat-list role="list">
+      <mat-list-item class="screenName">Screen Name: {{profile.screenName}}</mat-list-item>
+      <mat-list-item class="firstName">First Name: {{profile.firstName}}</mat-list-item>
+      <mat-list-item class="lastName">Last Name: {{profile.lastName}}</mat-list-item>
+      <mat-list-item class="gender">Gender: {{profile.gender | gender}}</mat-list-item>
+      <mat-list-item class="age">Age: {{profile.dateOfBirth | age}}</mat-list-item>
+      <mat-list-item class="birthday">Birthday: {{profile.dateOfBirth | date: 'MMMM d'}}</mat-list-item>
+      <mat-list-item class="location">Location: {{profile.city + ' ' + profile.region + ' ' + profile.country}}</mat-list-item>
+      <mat-list-item class="areaOfStudy">Area of Study: {{profile.areaOfStudy}}</mat-list-item>
+      <mat-list-item class="bio">Bio: {{profile.bio}}</mat-list-item>
+    </mat-list>
   </div>
-  <div class="profileRelations">
-    <app-users-list [userId]="profile.userId" type="friends"></app-users-list>
+  <div class="profileRelations">   
+      <app-users-list [userId]="profile.userId" [screenName]= "profile.screenName" type="friends" class="friendsList"></app-users-list>
+      <app-users-list [userId]="profile.userId" [screenName]= "profile.screenName" type="followers" class="friendsList"></app-users-list>
+      <app-users-list [userId]="profile.userId" [screenName]= "profile.screenName" type="following" class="followingList"></app-users-list>
   </div>
 </div>

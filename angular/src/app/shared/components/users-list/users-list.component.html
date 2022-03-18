@@ -1,20 +1,20 @@
-<ng-template>
-  <ul>
-    <li *ngFor="let user of users; let i = index">
-      <a [routerLink]="['/users/', user.userId]">
-        <app-profile-pic [profilePicName]="user.profilePic" imageSize="thumb"></app-profile-pic>
-        <span>{{user.screenName}}</span>
-      </a>
-    </li>
-  </ul>
-</ng-template>
-<div class="listWrapper">
-  <ul>
-    <li *ngFor="let user of users; let i = index">
-      <a [routerLink]="['/users/', user.userId]">
-        <app-profile-pic [profilePicName]="user.profilePic" imageSize="thumb"></app-profile-pic>
-        <span>{{user.screenName}}</span>
-      </a>
-    </li>
-  </ul>
-</div>
+
+
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>{{screenName}}'s {{type}}</mat-panel-title>
+    <mat-panel-description>
+      {{users.length}} {{type}}
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+  
+  <ng-template matExpansionPanelContent>
+    <mat-list>
+      <mat-list-item *ngFor="let user of users; let i = index">
+        <a [routerLink]="['/users/', user.userId]">
+          <app-profile-pic [profilePicName]="user.profilePic" title= "{{user.screenName}}" imageSize="thumb"></app-profile-pic>
+        </a>
+      </mat-list-item>
+    </mat-list>
+  </ng-template>
+</mat-expansion-panel>

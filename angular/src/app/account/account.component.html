@@ -1,10 +1,12 @@
 <div>
-  <h1>Your Account</h1>  
-  <button mat-button (click)="editMode=(!editMode)" *ngIf="!(editMode) && initialized">Edit Account Information</button>
+  <h1 *ngIf="!editMode">Your Profile</h1>
+  <h1 *ngIf="editMode">Edit Information</h1>
+  
 </div>
-<div>
+<div class="wrapper">
   <app-user-profile *ngIf="!(editMode) && initialized" [profile]="userAccount"></app-user-profile>
   <app-account-edit *ngIf="editMode && initialized" (modeChange)="editMode=$event" (submit)="onSubmit($event)" [currentInfo]="userAccount"></app-account-edit>
 </div>
+<button mat-button (click)="editMode=(!editMode)" *ngIf="!(editMode) && initialized">Edit Account Information</button>
 
 

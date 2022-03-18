@@ -1,15 +1,19 @@
 <mat-toolbar color="primary" class="navbar">
+  <mat-toolbar-row>
+    <span class="title">Zone Connect</span>
   
-  <span class="title">Zone Connect</span>
-  
-  <div class="spacer"></div>
-  
-  
-  <a routerLink="/home"><button mat-button>Home</button></a>
-  <a routerLink="/account" *ngIf="loggedIn"><button mat-button>My Account</button></a>
-  <a routerLink="/logout" *ngIf="loggedIn"><button mat-button>Log out</button></a>
-  <a routerLink="/signup" *ngIf="(!loggedIn)"><button mat-button>Sign up</button></a>
-  <a routerLink="/login" *ngIf="(!loggedIn)"><button mat-button>Log in</button></a>
+    <div class="spacer"></div>
+    
+    
+    <a routerLink="/home"><button mat-button class="navbutton">Home</button></a>
+    <a routerLink="/account" *ngIf="loggedIn"><button mat-button class="navbutton">My Account</button></a>
+    <a routerLink="/signup" *ngIf="(!loggedIn)"><button mat-button class="navbutton">Sign up</button></a>
+    <a routerLink="/login" *ngIf="(!loggedIn)"><button mat-button class="navbutton">Log in</button></a>
+    <button mat-icon-button *ngIf="loggedIn" (click)="toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+  </mat-toolbar-row>
   
   
 </mat-toolbar>

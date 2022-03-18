@@ -136,6 +136,17 @@ router.post("/login", function (req, res, next) {
       });
     });
 });
+// AUTH ROUTE
+router.get("/auth", function (req, res, next) {
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({ message: auth.message });
+  } else {
+    res
+      .status(200)
+      .send({ userId: auth.decoded.userId, admin: auth.decoded.admin });
+  }
+});
 
 /* GET user profile. */
 router.get("/profile/:id", function (req, res, next) {

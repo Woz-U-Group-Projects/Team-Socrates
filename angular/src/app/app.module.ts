@@ -6,7 +6,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
 import {
@@ -28,6 +28,7 @@ import { UserPageComponent } from './user-page/user-page.component';
     MatToolbarModule,
     MatButtonModule,
     RouterModule,
+    MatSidenavModule,
   ],
   providers: [Title],
   bootstrap: [AppComponent],
