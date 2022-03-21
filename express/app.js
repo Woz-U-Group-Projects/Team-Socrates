@@ -11,7 +11,7 @@ const upload = multer({
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
       // upload only png and jpg format
-      return cb(new Error("Please upload a png or jpg image"));
+      return cb(new Error({ message: "Please upload a png or jpg image" }));
     } else {
       cb(undefined, true);
     }

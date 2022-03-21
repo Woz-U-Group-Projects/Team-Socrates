@@ -308,46 +308,70 @@ router.get("/profile", function (req, res, next) {
   }
 });
 
-router.post(
-  "/profile/pic",
-  function (req, res, next) {
+router.put(
+  "/profile",
+  upload.single("profilePic"),
+  async function (req, res, next) {
     const auth = res.locals.auth;
     if (!auth.loggedIn) {
       res.status(401).send({ message: auth.message });
     } else {
-      upload.single("profilepic")(req, res, (err) => {
-        if (err) {
-          res.status(400).send(err);
-        }
-        if (req.file) {
-          req.file.filename = Date.now() + "-" + req.file.originalname;
-          sharp(req.file.buffer)
-            .toFile(`./public/images/${req.file.filename}`)
-            .then((data) => {
-              console.log(req.file.filename);
-              models.users.update(
-                { profilePic: req.file.filename },
-                { where: { userId: auth.decoded.userId } }
-              );
-              res.status(201).send({ message: "New Profile Picture Uploaded" });
-              sharp(req.file.buffer)
-                .resize({ width: 100, height: 100 })
-                .toFile(`./public/images/thumb/${req.file.filename}`);
-              sharp(req.file.buffer)
-                .resize({ width: 320, height: 320 })
-                .toFile(`./public/images/normal/${req.file.filename}`);
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        } else {
-          res.status(400).send({ message: "No file uploaded" });
-        }
+      let newFileName = null;
+      if (req.file) {
+        newFileName = Date.now() + "-" + req.file.originalname;
+        sharp(req.file.buffer).toFile(`./public/images/${newFileName}`);
+        sharp(req.file.buffer)
+          .resize({ width: 100, height: 100 })
+          .toFile(`./public/images/thumb/${newFileName}`);
+        sharp(req.file.buffer)
+          .resize({ width: 320, height: 320 })
+          .toFile(`./public/images/normal/${newFileName}`);
+      }
+      let user = await models.users.findOne({
+        where: {
+          userId: auth.decoded.userId,
+          username: auth.decoded.username,
+        },
       });
+      // Delete old profile pics from server on new file upload
+      try {
+        if (user.profilePic && newFileName) {
+          fs.unlinkSync(
+            path.join(__dirname, "../public/images", user.profilePic)
+          );
+          fs.unlinkSync(
+            path.join(__dirname, "../public/images/thumb", user.profilePic)
+          );
+          fs.unlinkSync(
+            path.join(__dirname, "../public/images/normal", user.profilePic)
+          );
+        }
+      } finally {
+        user.update({
+          screenName: req.body.screenName,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+          gender: req.body.gender,
+          dateOfBirth: req.body.dateOfBirth,
+          city: req.body.city,
+          region: req.body.region,
+          country: req.body.country,
+          bio: req.body.bio,
+          areaOfStudy: req.body.areaOfStudy,
+          profilePic: newFileName ?? user.profilePic,
+        });
+        res.status(204).send();
+        if (req.file) {
+          sharp(req.file.buffer)
+            .resize({ width: 100, height: 100 })
+            .toFile(`./public/images/thumb/${newFileName}`);
+          sharp(req.file.buffer)
+            .resize({ width: 320, height: 320 })
+            .toFile(`./public/images/normal/${newFileName}`);
+        }
+      }
     }
-  },
-  function (err, req, res, next) {
-    res.status(400).send({ message: error.message });
   }
 );
 router.delete("/profile/pic", async function (req, res, next) {
@@ -376,43 +400,28 @@ router.delete("/profile/pic", async function (req, res, next) {
     }
   }
 });
-router.put("/profile", function (req, res, next) {
+//GET New Notifications Count
+router.get("/notifications/newcount", async function (req, res, next) {
   const auth = res.locals.auth;
   if (!auth.loggedIn) {
     res.status(401).send({ message: auth.message });
   } else {
-    models.users
-      .update(
-        {
-          email: req.body.email,
-          screenName: req.body.screenName,
-          profilePic: req.body.profilePic,
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          gender: req.body.gender,
-          dateOfBirth: req.body.dateOfBirth,
-          city: req.body.city,
-          region: req.body.region,
-          country: req.body.country,
-          bio: req.body.bio,
-          areaOfStudy: req.body.areaOfStudy,
-        },
-        {
-          where: {
-            userId: auth.decoded.userId,
-            username: auth.decoded.username,
-          },
-        }
-      )
-      .then((user) => {
-        res.status(204).send();
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).send({
-          message: err.message,
-        });
-      });
+    const numberOf = await models.userNotifications.count({
+      where: { recipientId: auth.decoded.userId, readStatus: false },
+    });
+    console.log(numberOf.toString());
+    res.status(200).send(numberOf.toString());
+  }
+});
+router.get("/notifications/count", async function (req, res, next) {
+  const auth = res.locals.auth;
+  if (!auth.loggedIn) {
+    res.status(401).send({ message: auth.message });
+  } else {
+    const numberOf = await models.userNotifications.count({
+      where: { recipientId: auth.decoded.userId },
+    });
+    res.status(200).send(numberOf.toString());
   }
 });
 //GET Notifications List
@@ -421,14 +430,29 @@ router.get("/notifications", async function (req, res, next) {
   if (!auth.loggedIn) {
     res.status(401).send({ message: auth.message });
   } else {
-    const notifications = await models.userNotifications.findAll({
-      where: { recipientId: auth.decoded.userId },
-      include: {
-        model: models.globalNotifications,
-        attributes: ["actorId", "entityId", "entityActionType"],
-      },
-    });
-    res.status(200).send(notifications);
+    try {
+      const notifications = await models.userNotifications.findAll({
+        where: { recipientId: auth.decoded.userId },
+        offset: parseInt(req.query.offset) * parseInt(req.query.limit),
+        limit: parseInt(req.query.limit),
+        order: [["createdAt", "DESC"]],
+        attributes: ["readStatus", "createdAt"],
+        include: {
+          model: models.globalNotifications,
+          attributes: ["entityId", "entityActionType", "notificationId"],
+          include: {
+            model: models.users,
+            as: "actor",
+            attributes: ["userId", "screenName"],
+          },
+        },
+      });
+
+      res.status(200).send(notifications);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send();
+    }
   }
 });
 //PUT Set all notifications as read
@@ -441,11 +465,13 @@ router.put("/notifications", async function (req, res, next) {
       { readStatus: true },
       { where: { recipientId: auth.decoded.userId } }
     );
+    console.log("did we do it?");
+    console.log("did we???????????????????????????");
     res.status(204).send();
   }
 });
 //PUT Set Notification read status
-router.put("/notifications/:id", function (req, res, next) {
+router.put("/notifications/:id", async function (req, res, next) {
   const auth = res.locals.auth;
   if (!auth.loggedIn) {
     res.status(401).send({ message: auth.message });
@@ -468,13 +494,13 @@ router.delete("/notifications/:id", async function (req, res, next) {
   if (!auth.loggedIn) {
     res.status(401).send({ message: auth.message });
   } else {
-    models.userNotifications.delete({
+    models.userNotifications.destroy({
       where: {
         notificationId: req.params.id,
         recipientId: auth.decoded.userId,
       },
     });
-    res.status(204).send;
+    res.status(204).send();
   }
 });
 module.exports = router;

@@ -26,7 +26,6 @@ export class SessionManagerService {
     const interval = setInterval(() => {
       if (this.sessionLength <= 0) {
         clearInterval(interval);
-        observer.next(this.sessionLength);
         observer.complete();
       }
       this.sessionLength--;
@@ -38,7 +37,7 @@ export class SessionManagerService {
     this.loggedIn$.next(false);
     this.sessionLength = 0;
   }
-  checkLoggedIn$(): Observable<boolean> {
+  loginState$(): Observable<boolean> {
     return this.loggedIn$.asObservable();
   }
 }

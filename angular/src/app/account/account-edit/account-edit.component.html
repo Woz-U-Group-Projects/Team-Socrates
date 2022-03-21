@@ -1,25 +1,27 @@
-<form (ngSubmit)="update()" enctype="multipart/form-data">
+<form [formGroup]="newInfo" (ngSubmit)="onSubmit()" 
+>
   <mat-form-field>
     <mat-label>Screen Name</mat-label>
-    <input matInput name="screenName" [(ngModel)]="currentInfo.screenName">
+    <input matInput formControlName="screenName">
   </mat-form-field>
     <mat-label>Profile Pic</mat-label>
-    <input name="profilePic" type="file" [(ngModel)]="currentInfo.profilePic">
+    <input type="file" (change)="uploadImage($event)">
+    <button mat-button color="danger">Delete Profile Pic</button>
   <mat-form-field>
     <mat-label>Email</mat-label>
-    <input matInput name="email" [(ngModel)]="currentInfo.email">
+    <input matInput formControlName="email" required>
   </mat-form-field>
     <mat-form-field>
     <mat-label>First Name</mat-label>
-    <input matInput name="firstName" [(ngModel)]="currentInfo.firstName">
+    <input matInput formControlName="firstName">
   </mat-form-field>
   <mat-form-field>
     <mat-label>Last Name</mat-label>
-    <input matInput name="lastName" [(ngModel)]="currentInfo.lastName">
+    <input matInput formControlName="lastName">
   </mat-form-field>
   <mat-form-field>
     <mat-label>Gender</mat-label>
-    <mat-select name="gender" [(ngModel)]="currentInfo.gender">
+    <mat-select formControlName="gender">
       <mat-option value="m">Male</mat-option>
       <mat-option value="f">Female</mat-option>
       <mat-option value="o">Other</mat-option>
@@ -28,29 +30,28 @@
   </mat-form-field>
   <mat-form-field>
     <mat-label>Enter Date of Birth</mat-label>
-    <input matInput [matDatepicker]="picker" name="dateOfBirth" [(ngModel)]="currentInfo.dateOfBirth">
+    <input matInput [matDatepicker]="picker" formControlName="dateOfBirth">
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
   <mat-form-field>
     <mat-label>City</mat-label>
-    <input matInput name="city" [(ngModel)]="currentInfo.city">
+    <input matInput formControlName="city">
   </mat-form-field>
   <mat-form-field>
     <mat-label>State or Region</mat-label>
-    <input matInput name="region" [(ngModel)]="currentInfo.region">
+    <input matInput formControlName="region">
   </mat-form-field> <mat-form-field>
     <mat-label>Country</mat-label>
-    <input matInput name="country" [(ngModel)]="currentInfo.country">
+    <input matInput formControlName="country">
   </mat-form-field>
   <mat-form-field>
     <mat-label>Area of Study</mat-label>
-    <input matInput name="areaOfStudy" [(ngModel)]="currentInfo.areaOfStudy">
+    <input matInput formControlName="areaOfStudy">
   </mat-form-field>
   <mat-form-field>
     <mat-label>Bio</mat-label>
-    <textarea matInput name="bio" [(ngModel)]="currentInfo.bio"></textarea>
+    <textarea matInput formControlName="bio"></textarea>
   </mat-form-field>
-  <button (click)="switchView()" mat-button>Go back</button>
-  <button type="submit" mat-button>Update Profile</button>
+  <button type="submit" mat-button [disabled]="!newInfo.valid">Update Information</button>
 </form>

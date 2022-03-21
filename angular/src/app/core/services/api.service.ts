@@ -4,14 +4,11 @@ import { Observable, first } from 'rxjs';
 
 @Injectable()
 export class ApiService {
-  defaultHeaders = new HttpHeaders({
-    'content-type': 'application/json; charset=utf-8',
-  });
   baseURL: string = 'http://localhost:3001/api/';
   constructor(private http: HttpClient) {}
   setHeaders(headers: string[] | void) {
     if (!headers) {
-      return this.defaultHeaders;
+      return undefined;
     } else {
       let newHeaders = new HttpHeaders();
       let headerKey: string;
@@ -25,34 +22,30 @@ export class ApiService {
       return newHeaders;
     }
   }
-  get(extURL: string, headers: string[] | void) {
+  get(extURL: string) {
     return this.http
       .get(this.baseURL + extURL, {
-        headers: this.setHeaders(headers),
         withCredentials: true,
       })
       .pipe(first());
   }
-  post(extURL: string, body: object, headers: string[] | void) {
+  post(extURL: string, body: object | void) {
     return this.http
       .post(this.baseURL + extURL, body, {
-        headers: this.setHeaders(headers),
         withCredentials: true,
       })
       .pipe(first());
   }
-  put(extURL: string, body: object, headers: string[] | void) {
+  put(extURL: string, body: object | void) {
     return this.http
       .put(this.baseURL + extURL, body, {
-        headers: this.setHeaders(headers),
         withCredentials: true,
       })
       .pipe(first());
   }
-  delete(extURL: string, body: object, headers: string[] | void) {
+  delete(extURL: string, body: object | void) {
     return this.http
       .delete(this.baseURL + extURL, {
-        headers: this.setHeaders(headers),
         withCredentials: true,
       })
       .pipe(first());

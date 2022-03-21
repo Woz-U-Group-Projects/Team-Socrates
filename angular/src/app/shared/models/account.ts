@@ -3,7 +3,7 @@ export class Account {
   username!: string;
   email!: string;
   screenName!: string;
-  profilePic?: string | null;
+  profilePic?: string | null | File;
   firstName?: string;
   lastName?: string;
   gender?: string;

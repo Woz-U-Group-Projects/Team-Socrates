@@ -1,7 +1,9 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { SessionManagerService } from 'src/app/core/services/session-manager.service';
 import { Subscription, map } from 'rxjs';
+import { NotificationsPreview } from 'src/app/shared/models/notificationsPreview';
+import { NotificationsService } from '../../services/notifications.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -9,47 +11,35 @@ import { Subscription, map } from 'rxjs';
 })
 export class HeaderComponent implements OnInit {
   loggedIn: boolean = false;
-  timer: string;
-  @Output() sidenavToggle = new EventEmitter();
-  sidenav: boolean = false;
-  toggle() {
+  @Output() sidenavToggle = new EventEmitter<void>();
+  @Output() notificationsToggle = new EventEmitter<void>();
+  notificationsPreview: number;
+  @Input() notificationsStatus: string = 'notifications';
+  log() {
+    console.log(this.notificationsPreview);
+  }
+  toggleSidebar() {
     this.sidenavToggle.emit();
   }
+  toggleNotifications() {
+    this.notificationsToggle.emit();
+  }
   constructor(
-    private sessionManagerService: SessionManagerService,
-    private router: Router
+    private _sessionManagerService: SessionManagerService,
+    private router: Router,
+    private _notificationsService: NotificationsService
   ) {}
 
   ngOnInit() {
-    this.sessionManagerService.checkLoggedIn$().subscribe({
+    this._sessionManagerService.loginState$().subscribe({
       next: (res) => {
         this.loggedIn = res;
-        if (res === true) {
-          this.sessionTime();
-        }
-      },
-      error: (err) => {
-        console.error(`${err.error}\n${err.message}`);
       },
     });
-  }
-
-  sessionTime() {
-    this.sessionManagerService.sessionTimer.subscribe({
+    this._notificationsService.unreadCountState$().subscribe({
       next: (num) => {
-        let min: number | string = Math.floor(num / 60);
-        let sec: number | string = num % 60;
-        if (min < 10) {
-          min = '0' + min.toString();
-        }
-        if (sec < 10) {
-          sec = '0' + sec.toString();
-        }
-        this.timer = min + ':' + sec;
-        console.log(this.timer);
+        this.notificationsPreview = num;
       },
-      error: (err) => console.error(err),
-      complete: () => this.router.navigate(['/logout']),
     });
   }
 }

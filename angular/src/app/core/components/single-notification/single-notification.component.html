@@ -1,0 +1,41 @@
+<mat-card [ngStyle]="getStyles()" tabindex="0">
+  <!--Friend Requests-->
+  <ng-template [ngIf]="(notification.globalNotification.entityActionType==EntityActionType.FriendRequest)">
+    <a [routerLink]="['/users/', notification.globalNotification.actor.userId]">{{notification.globalNotification.actor.screenName}}</a> would like to be your friend!
+   <mat-card-actions>
+     <button mat-button  matTooltip="Accept Request" (click)="accept()">
+       <mat-icon color="primary">thumb_up</mat-icon>
+      </button>
+      <button mat-button  matTooltip="Reject Request" (click)="decline()">
+        <mat-icon color="accent">thumb_down_alt</mat-icon>
+      </button>
+      <button mat-button  matTooltip="Mark As Read" (click)="markAsRead()" [disabled]="(notification.readStatus)">
+        <mat-icon>mark_email_read</mat-icon>
+      </button>
+    </mat-card-actions>
+  </ng-template>
+  <!--Accepted Requests-->
+  <ng-template [ngIf]="(notification.globalNotification.entityActionType==EntityActionType.NewFriendship)">
+    <p>New Friendship! If only this were a dynamic message...</p>
+    <mat-card-actions>
+      <button mat-button  matTooltip="Mark As Read" (click)="markAsRead()" [disabled]="(notification.readStatus)">
+        <mat-icon>mark_email_read</mat-icon>
+      </button>
+      <button mat-button  matTooltip="Dismiss This Message" (click)="deleteNotification()">
+        <mat-icon>delete_forever</mat-icon>
+      </button>
+    </mat-card-actions>
+  </ng-template>
+  <!--Direct Messages-->
+  <ng-template [ngIf]="(notification.globalNotification.entityActionType==EntityActionType.FriendRequest)">
+    <p>You'll never see this!</p>
+  </ng-template>
+  <!--Newly Created Thread-->
+  <ng-template [ngIf]="(notification.globalNotification.entityActionType==EntityActionType.FriendRequest)">
+    <p>You'll never see this!</p>
+  </ng-template>
+  <!--New Post-->
+  <ng-template [ngIf]="(notification.globalNotification.entityActionType==EntityActionType.FriendRequest)">
+    <p>You'll never see this!</p>
+  </ng-template>
+</mat-card>

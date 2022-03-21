@@ -7,12 +7,14 @@ import { ApiService } from '../core/services/api.service';
 })
 export class AccountComponent implements OnInit {
   initialized: Boolean = false;
-  editMode: Boolean = false;
   userAccount!: any;
   private apiRoute = 'users/profile';
   constructor(private _ApiService: ApiService) {}
 
   ngOnInit(): void {
+    this.infoGet();
+  }
+  infoGet() {
     this._ApiService.get(this.apiRoute).subscribe({
       next: (res: any) => {
         this.userAccount = res;
@@ -21,14 +23,6 @@ export class AccountComponent implements OnInit {
       complete: () => {},
       error: (err) => {
         console.error(err);
-      },
-    });
-  }
-  onSubmit(newInfo: any) {
-    this._ApiService.put(this.apiRoute, newInfo).subscribe({
-      error: (err) => console.error(err),
-      complete: () => {
-        this.editMode = false;
       },
     });
   }

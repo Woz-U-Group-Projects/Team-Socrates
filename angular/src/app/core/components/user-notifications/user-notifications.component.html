@@ -1,0 +1,24 @@
+<div class="notificationContainer">
+  <div class="top">
+    <strong mat-line>Notifications</strong>
+    <div mat-line>{{count}} Total Notifications</div>
+    <button mat-button color="accent" (click)="markAll()">
+      Mark all as read
+    </button>
+
+      <mat-list class="notificationList">
+        <mat-list-item *ngFor="let notification of currentNotifications" class="notificationListItem">
+          <app-single-notification [notification]="notification" (action)="update()"></app-single-notification>
+        </mat-list-item>
+      </mat-list>
+  </div>
+
+  <div class="bottom">
+<mat-paginator [length]="count" pageSize="5" (page)="paginator=$event"
+
+
+></mat-paginator>
+  </div>
+</div>
+
+

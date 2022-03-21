@@ -1,10 +1,20 @@
 <div class="app-container">
-  <app-header (sidenavToggle)="navbar=!navbar"></app-header>
+  <app-header (sidenavToggle)="sidebarToggle()" (notificationsToggle)="notificationsToggle()"></app-header>
   <mat-sidenav-container class="app-body">
-    <mat-sidenav #sidenav position="end" mode="side" [(opened)]="navbar">
-      <a routerLink="/logout"><button mat-button (click)="toggle()">Log out</button></a>
+    <mat-sidenav position="start" [(opened)]="notificationsbar" role="region" mode="push">
+      <app-user-notifications [focus]="notificationsbar"></app-user-notifications>
     </mat-sidenav>
-    <mat-sidenav-content>
+    <mat-sidenav  position="end" mode="side" [(opened)]="sidebar" role="region">
+      <mat-list>
+        <mat-list-item>
+          <a routerLink="/logout"><button mat-button (click)="sidebarToggle()"><mat-icon>logout</mat-icon>Log out</button></a>
+        </mat-list-item>
+        <mat-list-item class="sessionTimer">
+          <mat-icon>av_timer</mat-icon>{{timer}}
+        </mat-list-item>
+      </mat-list>
+    </mat-sidenav>
+    <mat-sidenav-content role="main">
       <router-outlet></router-outlet>
     </mat-sidenav-content>
   </mat-sidenav-container>  

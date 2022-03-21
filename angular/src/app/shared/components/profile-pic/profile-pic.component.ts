@@ -13,7 +13,7 @@ import {
 })
 export class ProfilePicComponent implements OnInit, OnChanges {
   @Input() public imageSize: string | null; // nullish (normal size), 'thumb' , 'normal'
-  @Input() public profilePicName: string | null;
+  @Input() public profilePicName: string | null | undefined;
   public imageURL: string;
   constructor() {}
   ngOnChanges(changes: SimpleChanges): void {

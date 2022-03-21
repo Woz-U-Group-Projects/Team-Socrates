@@ -1,19 +1,17 @@
 <mat-toolbar color="primary" class="navbar">
   <mat-toolbar-row>
-    <span class="title">Zone Connect</span>
+    <span class="title"><span class="capital">Z</span>one <span class="capital">C</span>onnect</span>
   
     <div class="spacer"></div>
-    
-    
-    <a routerLink="/home"><button mat-button class="navbutton">Home</button></a>
-    <a routerLink="/account" *ngIf="loggedIn"><button mat-button class="navbutton">My Account</button></a>
-    <a routerLink="/signup" *ngIf="(!loggedIn)"><button mat-button class="navbutton">Sign up</button></a>
-    <a routerLink="/login" *ngIf="(!loggedIn)"><button mat-button class="navbutton">Log in</button></a>
-    <button mat-icon-button *ngIf="loggedIn" (click)="toggle()">
+    <a routerLink="/home"><button mat-button class="navbutton"><mat-icon>home</mat-icon>Home</button></a>
+    <a routerLink="/account" *ngIf="loggedIn"><button mat-button class="navbutton"><mat-icon>account_box</mat-icon>My Account</button></a>
+    <a routerLink="/login" *ngIf="(!loggedIn)"><button mat-button class="navbutton"><mat-icon>login</mat-icon>Log in</button></a>
+    <a routerLink="/signup" *ngIf="(!loggedIn)"><button mat-button class="navbutton"><mat-icon>person_add_alt</mat-icon>Sign up</button></a>
+    <button mat-icon-button *ngIf="loggedIn" (click)="toggleNotifications()">
+      <mat-icon [matBadge]="notificationsPreview" matBadgeColor="accent" matBadgeSize="small">{{notificationsStatus}}</mat-icon>
+    </button>
+    <button mat-icon-button *ngIf="loggedIn" (click)="toggleSidebar()">
       <mat-icon>menu</mat-icon>
     </button>
-
   </mat-toolbar-row>
-  
-  
 </mat-toolbar>
